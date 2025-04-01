@@ -29,13 +29,13 @@ class LoginScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 60),
             Center(
-              child: Column(
-                children: [
-                  Image.asset(
-                    'assets/imagelogo.png', // Reemplaza con tu imagen
-                    width: 250,
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Image.asset(
+                  'assets/imagelogo.png',
+                  width: 500, // Aumentado para que se vea más grande
+                  fit: BoxFit.contain, // Mantiene proporción sin deformar
+                ),
               ),
             ),
             const SizedBox(height: 40),
@@ -53,13 +53,13 @@ class LoginScreen extends StatelessWidget {
                   const SizedBox(height: 40),
                   _buildTextField(
                     icon: Icons.person,
-                    hintText: 'Email',
+                    hintText: 'USUARIO',
                     obscureText: false,
                   ),
                   const SizedBox(height: 20),
                   _buildTextField(
                     icon: Icons.lock,
-                    hintText: 'Contraseña',
+                    hintText: 'CONTRASEÑA',
                     obscureText: true,
                   ),
                   const SizedBox(height: 10),
@@ -70,37 +70,37 @@ class LoginScreen extends StatelessWidget {
                         children: [
                           Icon(Icons.check_box_outline_blank, size: 16),
                           SizedBox(width: 4),
-                          Text("Remember Me",
+                          Text("RECORDAR USUARIO",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.blue)),
                         ],
                       ),
-                      Text("Forgot Password?",
+                      Text("NO RECUERDAS TU CONTRASEÑA?",
                           style: TextStyle(fontSize: 12, color: Colors.blue)),
                     ],
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD83535),
-                      minimumSize: const Size.fromHeight(50),
+                      backgroundColor: Color(0xFFD83535),
+                      minimumSize: Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     onPressed: () {},
                     child: const Text(
-                      'Login',
+                      'LOGIN',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text("Don't have an account? "),
+                  const Text("NO TIENES CUENTA DE USUARIO? "),
                   TextButton(
                     onPressed: () {},
                     child: const Text(
-                      'Create an account',
+                      'CREAR CUENTA DE USUARIO',
                       style: TextStyle(color: Colors.blueAccent),
                     ),
                   )
