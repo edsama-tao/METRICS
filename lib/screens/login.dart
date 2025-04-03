@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'registro.dart';
 
-class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,57 +34,67 @@ class RegisterScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
+                  const SizedBox(height: 40),
+                  buildTextField(icon: Icons.person, hintText: 'USUARIO', obscureText: false),
                   const SizedBox(height: 20),
-                  buildTextField(icon: Icons.person, hintText: 'NOMBRE', obscureText: false),
-                  const SizedBox(height: 10),
-                  buildTextField(icon: Icons.person_outline, hintText: 'APELLIDOS', obscureText: false),
-                  const SizedBox(height: 10),
-                  buildTextField(icon: Icons.badge, hintText: 'DNI', obscureText: false),
-                  const SizedBox(height: 10),
-                  buildTextField(icon: Icons.email, hintText: 'CORREO', obscureText: false),
-                  const SizedBox(height: 10),
-                  buildTextField(icon: Icons.phone, hintText: 'TELÉFONO', obscureText: false),
-                  const SizedBox(height: 10),
-                  buildTextField(icon: Icons.account_circle, hintText: 'TIPO DE USUARIO', obscureText: false),
-                  const SizedBox(height: 10),
                   buildTextField(icon: Icons.lock, hintText: 'CONTRASEÑA', obscureText: true),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Row(
+                        children: [
+                          Icon(Icons.check_box_outline_blank, size: 16),
+                          SizedBox(width: 4),
+                          Text("RECORDAR USUARIO",
+                              style: TextStyle(fontSize: 12, color: Colors.blue)),
+                        ],
+                      ),
+                      Text("NO RECUERDAS TU CONTRASEÑA?",
+                          style: TextStyle(fontSize: 12, color: Colors.blue)),
+                    ],
+                  ),
                   const SizedBox(height: 30),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD83535),
+                      backgroundColor: const Color(0xFFFF3C41),
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    onPressed: () {
-                      // Acción de registro
-                    },
+                    onPressed: () {},
                     child: const Text(
-                      'REGISTRARSE',
+                      'LOGIN',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 20),
+                  const Text("NO TIENES CUENTA DE USUARIO? "),
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterScreen(),
+                        ),
+                      );
                     },
                     child: const Text(
-                      '¿YA TIENES CUENTA? INICIAR SESIÓN',
+                      'CREAR CUENTA DE USUARIO',
                       style: TextStyle(color: Colors.blueAccent),
                     ),
                   )
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
     );
   }
 
-  static Widget buildTextField({
+  Widget buildTextField({
     required IconData icon,
     required String hintText,
     required bool obscureText,
