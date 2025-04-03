@@ -37,18 +37,14 @@ class _UsuariosPageState extends State<UsuariosPage> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      // Imprimir la respuesta de la API para depuración
       print("Respuesta: ${response.body}");
-
       try {
-        // Intenta convertir la respuesta en JSON
         setState(() {
           usuarios = jsonDecode(response.body);
           cargando = false;
         });
-        print("Usuarios cargados: $usuarios");  // Verifica el contenido de los usuarios
+        print("Usuarios cargados: $usuarios");
       } catch (e) {
-        // Si no se puede convertir a JSON, muestra el error
         print("Error al convertir la respuesta a JSON: $e");
         setState(() {
           cargando = false;
@@ -68,16 +64,23 @@ class _UsuariosPageState extends State<UsuariosPage> {
       appBar: AppBar(title: Text("Lista de Usuarios")),
       body: cargando
           ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: usuarios.length,
-              itemBuilder: (context, index) {
-                final usuario = usuarios[index];
-                return ListTile(
-                  title: Text(usuario['nombre']),
-                  subtitle: Text(usuario['correo']),
-                );
-              },
-            ),
+          : usuarios.isEmpty
+              ? Center(child: Text("No hay usuarios"))
+              : ListView.builder(
+                  itemCount: usuarios.length,
+                  itemBuilder: (context, index) {
+                    final usuario = usuarios[index];
+                    return Card(
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      child: ListTile(
+                        leading: Icon(Icons.person),
+                        title: Text(usuario['usuario'] ?? 'Sin nombre'),
+                        subtitle: Text("Rol: ${usuario['rol'] ?? 'Sin rol'}"),
+                        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }
