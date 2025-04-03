@@ -7,21 +7,37 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFF3C41),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFF3C41),
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Transform.scale(
+            scale: 1.4, // Mismo tamaño del logo
+            child: Image.asset(
+              'assets/imagelogo.png',
+              height: 40,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
+          ),
+        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 60),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Image.asset(
-                  'assets/imagelogo.png',
-                  width: 500,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
             Container(
               padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
@@ -77,6 +93,17 @@ class RegisterScreen extends StatelessWidget {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: const Color(0xFFFF3C41),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: const [
+            Icon(Icons.calendar_month, color: Colors.white),
+            Icon(Icons.home, color: Colors.white),
+            Icon(Icons.mail, color: Colors.white),
           ],
         ),
       ),

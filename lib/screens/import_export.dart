@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'custom_drawer.dart'; // Asegúrate de que el archivo exista
+import 'custom_drawer.dart';
+import 'home.dart'; // Asegúrate de importar tu pantalla principal
 
 class ImportExportScreen extends StatelessWidget {
   const ImportExportScreen({super.key});
@@ -7,15 +8,20 @@ class ImportExportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: const CustomDrawer(), // ✅ Drawer real
+      endDrawer: const CustomDrawer(),
       backgroundColor: const Color(0xFFEDEDED),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Transform.scale(
+            scale: 1.4, // mismo tamaño de logo que en HomeScreen
+            child: Image.asset(
+              'assets/imagelogo.png',
+              height: 40,
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         actions: [
           Builder(
@@ -25,8 +31,6 @@ class ImportExportScreen extends StatelessWidget {
             ),
           ),
         ],
-        centerTitle: true,
-        title: const Text('Import/export'),
       ),
       body: Column(
         children: [
@@ -37,13 +41,21 @@ class ImportExportScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFFFF3C41),
+        color:const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(Icons.calendar_month, color: Colors.white),
-            Icon(Icons.home, color: Colors.white),
-            Icon(Icons.mail, color: Colors.white),
+          children: [
+            const Icon(Icons.calendar_month, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
+              },
+            ),
+            const Icon(Icons.mail, color: Colors.white),
           ],
         ),
       ),
@@ -55,7 +67,7 @@ class ImportExportScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: SizedBox(
         width: double.infinity,
-        height: 70, // ⬅️ Botón más alto
+        height: 70,
         child: ElevatedButton(
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -63,7 +75,7 @@ class ImportExportScreen extends StatelessWidget {
             );
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFD83535),
+            backgroundColor: const Color(0xFFFF3C41),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
