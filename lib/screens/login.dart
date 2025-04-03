@@ -1,8 +1,48 @@
 import 'package:flutter/material.dart';
 import 'registro.dart';
+import 'home.dart'; 
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _userController = TextEditingController();
+  final TextEditingController _passController = TextEditingController();
+
+  final Map<String, String> fakeDB = {
+    'usuario1': '1234',
+    'admin': 'admin123',
+  };
+
+  void _login() {
+    final user = _userController.text.trim();
+    final pass = _passController.text.trim();
+
+    if (fakeDB.containsKey(user) && fakeDB[user] == pass) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Usuario o contraseña incorrectos.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +75,18 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 40),
-                  buildTextField(icon: Icons.person, hintText: 'USUARIO', obscureText: false),
+                  TextField(
+                    controller: _userController,
+                    decoration: _buildInputDecoration(
+                        icon: Icons.person, hintText: 'USUARIO'),
+                  ),
                   const SizedBox(height: 20),
-                  buildTextField(icon: Icons.lock, hintText: 'CONTRASEÑA', obscureText: true),
+                  TextField(
+                    controller: _passController,
+                    obscureText: true,
+                    decoration: _buildInputDecoration(
+                        icon: Icons.lock, hintText: 'CONTRASEÑA'),
+                  ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,7 +112,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: _login,
                     child: const Text(
                       'LOGIN',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -94,22 +143,18 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField({
+  InputDecoration _buildInputDecoration({
     required IconData icon,
     required String hintText,
-    required bool obscureText,
   }) {
-    return TextField(
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.grey),
-        hintText: hintText,
-        filled: true,
-        fillColor: Colors.white70,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+    return InputDecoration(
+      prefixIcon: Icon(icon, color: Colors.grey),
+      hintText: hintText,
+      filled: true,
+      fillColor: Colors.white70,
+      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
       ),
     );
   }
