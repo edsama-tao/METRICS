@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home.dart'; // ✅ Importa tu pantalla de inicio
+import 'home.dart';
+import 'avisos.dart';
+import 'custom_drawer.dart';
 
 class PerfilUsuarioScreen extends StatelessWidget {
   final Map<String, String> usuario = {
@@ -20,6 +22,7 @@ class PerfilUsuarioScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFEDEDED),
+      endDrawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
@@ -44,58 +47,45 @@ class PerfilUsuarioScreen extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
-        children: [
-          const SizedBox(height: 10),
-          const Center(
-            child: Text(
-              'Perfil del Usuario',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+        children: usuario.entries.map((entry) {
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                )
+              ],
             ),
-          ),
-          const SizedBox(height: 30),
-          ...usuario.entries.map((entry) {
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  )
-                ],
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 4,
-                    child: Text(
-                      '${entry.key}:',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: Text(
+                    '${entry.key}:',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
-                  Expanded(
-                    flex: 6,
-                    child: Text(
-                      entry.value,
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                ),
+                Expanded(
+                  flex: 6,
+                  child: Text(
+                    entry.value,
+                    style: const TextStyle(fontSize: 16),
                   ),
-                ],
-              ),
-            );
-          }),
-        ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
       ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
@@ -112,7 +102,15 @@ class PerfilUsuarioScreen extends StatelessWidget {
                 );
               },
             ),
-            const Icon(Icons.mail, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.mail, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),

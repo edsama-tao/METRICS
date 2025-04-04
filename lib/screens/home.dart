@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'login.dart';
 import 'import_export.dart';
 import 'custom_drawer.dart';
+import 'avisos.dart'; // ✅ Importación añadida
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,10 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         title: Center(
           child: Transform.scale(
-            scale: 1.4, // Escala el logo sin agrandar la AppBar
+            scale: 1.4,
             child: Image.asset(
               'assets/imagelogo.png',
-              height: 40, // Altura base del logo
+              height: 40,
               fit: BoxFit.contain,
             ),
           ),
@@ -118,13 +119,18 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
+                // Ya estás en Home, no hace falta hacer nada
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.mail, color: Colors.white),
+              onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
                 );
               },
             ),
-            const Icon(Icons.mail, color: Colors.white),
           ],
         ),
       ),

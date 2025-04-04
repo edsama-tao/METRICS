@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'custom_drawer.dart';
+import 'home.dart';
+import 'avisos.dart';
 
 class ExportDataScreen extends StatefulWidget {
   const ExportDataScreen({super.key});
@@ -118,12 +120,9 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
                       const SnackBar(content: Text('Seleccione al menos un dato')),
                     );
                   } else {
-                    // Lógica de exportación
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'Exportando: ${selected.join(', ')}',
-                        ),
+                        content: Text('Exportando: ${selected.join(', ')}'),
                       ),
                     );
                   }
@@ -151,10 +150,21 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
               },
             ),
-            const Icon(Icons.mail, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.mail, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'custom_drawer.dart';
-import 'home.dart'; // Asegúrate de importar tu pantalla principal
+import 'home.dart';
+import 'avisos.dart';
+import 'exportarss.dart'; // ✅ Import añadido
 
 class ImportExportScreen extends StatelessWidget {
   const ImportExportScreen({super.key});
@@ -15,7 +17,7 @@ class ImportExportScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: Center(
           child: Transform.scale(
-            scale: 1.4, // mismo tamaño de logo que en HomeScreen
+            scale: 1.4,
             child: Image.asset(
               'assets/imagelogo.png',
               height: 40,
@@ -41,7 +43,7 @@ class ImportExportScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        color:const Color(0xFFFF3C41),
+        color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -55,7 +57,15 @@ class ImportExportScreen extends StatelessWidget {
                 );
               },
             ),
-            const Icon(Icons.mail, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.mail, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -70,8 +80,9 @@ class ImportExportScreen extends StatelessWidget {
         height: 70,
         child: ElevatedButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('$label presionado')),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ExportDataScreen()),
             );
           },
           style: ElevatedButton.styleFrom(
