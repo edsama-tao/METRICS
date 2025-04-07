@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Usuarios',
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: UsuariosPage(),
     );
   }
@@ -37,10 +38,10 @@ class _UsuariosPageState extends State<UsuariosPage> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      print("Respuesta: ${response.body}");
       try {
+        final decoded = jsonDecode(response.body);
         setState(() {
-          usuarios = jsonDecode(response.body);
+          usuarios = decoded;
           cargando = false;
         });
         print("Usuarios cargados: $usuarios");
@@ -51,10 +52,10 @@ class _UsuariosPageState extends State<UsuariosPage> {
         });
       }
     } else {
+      print("Error al obtener usuarios. Status code: ${response.statusCode}");
       setState(() {
         cargando = false;
       });
-      print("Error al obtener usuarios. Status code: ${response.statusCode}");
     }
   }
 
@@ -74,8 +75,18 @@ class _UsuariosPageState extends State<UsuariosPage> {
                       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       child: ListTile(
                         leading: Icon(Icons.person),
-                        title: Text(usuario['usuario'] ?? 'Sin nombre'),
-                        subtitle: Text("Rol: ${usuario['rol'] ?? 'Sin rol'}"),
+                        title: Text('${usuario['nombre'] ?? 'Sin nombre'} ${usuario['apellidos'] ?? ''}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Usuario: ${usuario['nombreUsuario'] ?? 'N/A'}"),
+                            Text("Correo: ${usuario['correo'] ?? 'N/A'}"),
+                            Text("Teléfono: ${usuario['telefono'] ?? 'N/A'}"),
+                            Text("Nacimiento: ${usuario['fechaNacimiento'] ?? 'N/A'}"),
+                            Text("Rol: ${usuario['tipoUser'] ?? 'N/A'}"),
+                          ],
+                        ),
+                        isThreeLine: true,
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
                       ),
                     );
