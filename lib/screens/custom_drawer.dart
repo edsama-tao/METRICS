@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'perfil_usuario.dart';  // Asegúrate de que la ruta sea correcta
 import 'import_export.dart';
 import 'login.dart';
-import 'perfil_usuario.dart'; // IMPORTANTE: asegúrate que este archivo existe
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -16,7 +16,7 @@ class CustomDrawer extends StatelessWidget {
           _buildDrawerButton("Perfil", Icons.person, () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => PerfilUsuarioScreen()),
+              MaterialPageRoute(builder: (_) => PerfilUsuarioScreen()), // Aquí ya es correcto
             );
           }, context),
           _buildDrawerButton("Importar/Exportar", Icons.import_export, () {

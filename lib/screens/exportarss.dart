@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'custom_drawer.dart';
+import 'package:metrics/screens/custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
+import 'tareas.dart'; // Importa TareasScreen
 
 class ExportDataScreen extends StatefulWidget {
   const ExportDataScreen({super.key});
@@ -146,13 +147,23 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Icon(Icons.calendar_month, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ActividadDiariaScreen(), // Navega a TareasScreen
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  MaterialPageRoute(builder: (_) => const HomeScreen()), // Va a Home
                 );
               },
             ),
@@ -161,7 +172,7 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Va a la pantalla de avisos
                 );
               },
             ),

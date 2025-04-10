@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 import 'avisos.dart';
 import 'custom_drawer.dart';
+import 'tareas.dart'; // Importa TareasScreen
 
 class PerfilUsuarioScreen extends StatelessWidget {
   final Map<String, String> usuario = {
@@ -88,17 +89,27 @@ class PerfilUsuarioScreen extends StatelessWidget {
         }).toList(),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFFFF3C41),
+        color: const Color(0xFFFF3C41), // Barra inferior igual a Home
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Icon(Icons.calendar_month, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ActividadDiariaScreen(), // Navega a la pantalla de tareas
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  MaterialPageRoute(builder: (_) => const HomeScreen()), // Va a Home
                 );
               },
             ),
@@ -107,7 +118,7 @@ class PerfilUsuarioScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Va a la pantalla de avisos
                 );
               },
             ),

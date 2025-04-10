@@ -3,6 +3,7 @@ import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
 import 'exportarss.dart'; // ✅ Import añadido
+import 'tareas.dart'; // ✅ Import de TareasScreen
 
 class ImportExportScreen extends StatelessWidget {
   const ImportExportScreen({super.key});
@@ -47,13 +48,23 @@ class ImportExportScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Icon(Icons.calendar_month, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ActividadDiariaScreen(), // Navega a TareasScreen
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  MaterialPageRoute(builder: (_) => const HomeScreen()), // Va a Home
                 );
               },
             ),
@@ -62,7 +73,7 @@ class ImportExportScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Va a la pantalla de avisos
                 );
               },
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'tareas.dart'; // Asegúrate de que la ruta de TareasScreen esté correctamente importada
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -38,8 +39,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }),
       );
 
-      print('Código HTTP: \${respuesta.statusCode}');
-      print('Respuesta del servidor: \${respuesta.body}');
+      print('Código HTTP: ${respuesta.statusCode}');
+      print('Respuesta del servidor: ${respuesta.body}');
 
       if (respuesta.statusCode == 200) {
         final resultado = jsonDecode(respuesta.body);
@@ -59,9 +60,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } catch (e) {
-      print('Error en conexión HTTP: \$e');
+      print('Error en conexión HTTP: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error de conexión: \$e')),
+        SnackBar(content: Text('Error de conexión: $e')),
       );
     }
   }
@@ -130,12 +131,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       registrarUsuario();
                     }
                   },
-                  child: const Text('REGISTRARSE', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'REGISTRARSE',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('¿YA TIENES CUENTA? INICIAR SESIÓN', style: TextStyle(color: Colors.blueAccent)),
+                  child: const Text(
+                    '¿YA TIENES CUENTA? INICIAR SESIÓN',
+                    style: TextStyle(color: Colors.blueAccent),
+                  ),
                 ),
               ],
             ),
@@ -146,17 +153,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(Icons.calendar_month, color: Colors.white),
-            Icon(Icons.home, color: Colors.white),
-            Icon(Icons.mail, color: Colors.white),
+          children: [
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ActividadDiariaScreen(), // Navega a TareasScreen
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                // Acción para el icono de Home
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.mail, color: Colors.white),
+              onPressed: () {
+                // Acción para el icono de Avisos
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget buildTextFormField(TextEditingController controller, IconData icon, String hint, bool obscure) {
+  Widget buildTextFormField(
+      TextEditingController controller, IconData icon, String hint, bool obscure) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
