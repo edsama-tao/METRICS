@@ -93,17 +93,16 @@ class AvisosScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  MaterialPageRoute(builder: (_) => const HomeScreen()), // Va a Home
                 );
               },
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
               onPressed: () {
-                // Ir a esta misma pantalla (para efecto desde otra)
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Va a la misma pantalla
                 );
               },
             ),

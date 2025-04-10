@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tareas.dart'; // Asegúrate de que la ruta de TareasScreen esté correctamente importada
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -100,10 +101,30 @@ class RegisterScreen extends StatelessWidget {
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(Icons.calendar_month, color: Colors.white),
-            Icon(Icons.home, color: Colors.white),
-            Icon(Icons.mail, color: Colors.white),
+          children: [
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ActividadDiariaScreen(), // Navega a TareasScreen
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                // Acción para el icono de Home
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.mail, color: Colors.white),
+              onPressed: () {
+                // Acción para el icono de Avisos
+              },
+            ),
           ],
         ),
       ),

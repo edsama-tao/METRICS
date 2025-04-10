@@ -3,7 +3,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'login.dart';
 import 'import_export.dart';
 import 'custom_drawer.dart';
-import 'avisos.dart'; // ✅ Importación añadida
+import 'avisos.dart';
+import 'tareas.dart'; // Asegúrate de que esta importación sea correcta
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -115,11 +116,21 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Icon(Icons.calendar_month, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ActividadDiariaScreen(), // Aquí se realiza la navegación correctamente
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
-                // Ya estás en Home, no hace falta hacer nada
+                // Ya estás en Home
               },
             ),
             IconButton(
@@ -127,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Asegúrate de que AvisosScreen esté correctamente importado
                 );
               },
             ),
