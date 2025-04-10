@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'registro.dart';
-import 'home.dart'; 
+import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,35 +16,52 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
 
-  final Map<String, String> fakeDB = {
-    'usuario1': '1234',
-    'admin': 'admin123',
-  };
-
-  void _login() {
+  Future<void> _login() async {
     final user = _userController.text.trim();
     final pass = _passController.text.trim();
 
-    if (fakeDB.containsKey(user) && fakeDB[user] == pass) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+    final url = Uri.parse("http://10.100.0.51/flutter_api/login_usuario.php");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'nombreUsuario': user, 'contrasena': pass}),
       );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: const Text('Usuario o contraseña incorrectos.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+
+      // Limpia la respuesta eliminando el BOM y espacios al inicio o al final.
+      final cleanedResponse = response.body.replaceAll('\uFEFF', '').trim();
+      print("Respuesta del servidor: '$cleanedResponse'");
+
+      final result = jsonDecode(cleanedResponse);
+
+      if (result['status'] == 'success') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        _mostrarError(result['message'] ?? 'Usuario o contraseña incorrectos.');
+      }
+    } catch (e) {
+      _mostrarError('Error de conexión: $e');
     }
+  }
+
+  void _mostrarError(String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

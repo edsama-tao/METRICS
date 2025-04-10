@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login.dart';
+import 'screens/registro.dart'; // importa si tienes el archivo RegisterScreen separado
 
 void main() {
   runApp(const MetricsApp());
@@ -13,7 +14,11 @@ class MetricsApp extends StatelessWidget {
     return MaterialApp(
       title: 'Metrics Login',
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(), // opcional si tienes navegación al registro
+      },
     );
   }
 }
