@@ -20,16 +20,21 @@ class _LoginScreenState extends State<LoginScreen> {
     final user = _userController.text.trim();
     final pass = _passController.text.trim();
 
+    print('Usuario: $user');
+    print('Contraseña: $pass');
+
     final url = Uri.parse("http://10.100.0.51/flutter_api/login_usuario.php");
 
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'nombreUsuario': user, 'contrasena': pass}),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {
+          'nombreUsuario': user,
+          'contrasena': pass,
+        },
       );
 
-      // Limpia la respuesta eliminando el BOM y espacios al inicio o al final.
       final cleanedResponse = response.body.replaceAll('\uFEFF', '').trim();
       print("Respuesta del servidor: '$cleanedResponse'");
 
@@ -98,14 +103,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextField(
                     controller: _userController,
                     decoration: _buildInputDecoration(
-                        icon: Icons.person, hintText: 'USUARIO'),
+                      icon: Icons.person,
+                      hintText: 'USUARIO',
+                    ),
                   ),
                   const SizedBox(height: 20),
                   TextField(
                     controller: _passController,
                     obscureText: true,
                     decoration: _buildInputDecoration(
-                        icon: Icons.lock, hintText: 'CONTRASEÑA'),
+                      icon: Icons.lock,
+                      hintText: 'CONTRASEÑA',
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -115,12 +124,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Icon(Icons.check_box_outline_blank, size: 16),
                           SizedBox(width: 4),
-                          Text("RECORDAR USUARIO",
-                              style: TextStyle(fontSize: 12, color: Colors.blue)),
+                          Text(
+                            "RECORDAR USUARIO",
+                            style: TextStyle(fontSize: 12, color: Colors.blue),
+                          ),
                         ],
                       ),
-                      Text("NO RECUERDAS TU CONTRASEÑA?",
-                          style: TextStyle(fontSize: 12, color: Colors.blue)),
+                      Text(
+                        "NO RECUERDAS TU CONTRASEÑA?",
+                        style: TextStyle(fontSize: 12, color: Colors.blue),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 30),
@@ -135,7 +148,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _login,
                     child: const Text(
                       'LOGIN',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 20),

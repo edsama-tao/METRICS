@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'custom_drawer.dart'; // Asegúrate de que esté importado correctamente
-import 'home.dart'; // Importa la pantalla Home
-import 'tareas.dart'; // Importa la pantalla Tareas (ActividadDiariaScreen)
+import 'home.dart'; // Importa la pantalla Home // Importa la pantalla Tareas (ActividadDiariaScreen)
 import 'avisos.dart'; // Importa la pantalla Avisos
 
 class ActividadDiariaScreen extends StatelessWidget {
