@@ -17,6 +17,7 @@ dependencies:
   flutter_localizations: # ✅ Localización añadida
     sdk: flutter
   provider: ^6.1.4
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

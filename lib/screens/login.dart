@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import 'registro.dart';
 import 'home.dart';
 import 'package:metrics/screens/global.dart';
 
@@ -16,6 +16,24 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  bool recordarUsuario = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarUsuarioGuardado();
+  }
+
+  Future<void> _cargarUsuarioGuardado() async {
+    final prefs = await SharedPreferences.getInstance();
+    final guardado = prefs.getString('usuarioRecordado') ?? '';
+    if (guardado.isNotEmpty) {
+      _userController.text = guardado;
+      setState(() {
+        recordarUsuario = true;
+      });
+    }
+  }
 
   Future<void> _login() async {
     final user = _userController.text.trim();
@@ -39,10 +57,17 @@ class _LoginScreenState extends State<LoginScreen> {
       final result = jsonDecode(cleanedResponse);
 
       if (result['status'] == 'success') {
-        globalUserId =
-            result['id_user'] is int
-                ? result['id_user']
-                : int.parse(result['id_user'].toString());
+        globalUserId = result['id_user'] is int
+            ? result['id_user']
+            : int.parse(result['id_user'].toString());
+
+        // Guardar usuario si se marcó la casilla
+        final prefs = await SharedPreferences.getInstance();
+        if (recordarUsuario) {
+          await prefs.setString('usuarioRecordado', user);
+        } else {
+          await prefs.remove('usuarioRecordado');
+        }
 
         print('✅ globalUserId asignado: $globalUserId');
 
@@ -61,17 +86,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void _mostrarError(String mensaje) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Error'),
-            content: Text(mensaje),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
           ),
+        ],
+      ),
     );
   }
 
@@ -125,18 +149,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Row(
                         children: [
-                          Icon(Icons.check_box_outline_blank, size: 16),
-                          SizedBox(width: 4),
-                          Text(
+                          Checkbox(
+                            value: recordarUsuario,
+                            onChanged: (value) {
+                              setState(() {
+                                recordarUsuario = value ?? false;
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 4),
+                          const Text(
                             "RECORDAR USUARIO",
                             style: TextStyle(fontSize: 12, color: Colors.blue),
                           ),
                         ],
                       ),
-                      Text(
+                      const Text(
                         "NO RECUERDAS TU CONTRASEÑA?",
                         style: TextStyle(fontSize: 12, color: Colors.blue),
                       ),
@@ -158,22 +189,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text("NO TIENES CUENTA DE USUARIO? "),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'CREAR CUENTA DE USUARIO',
-                      style: TextStyle(color: Colors.blueAccent),
                     ),
                   ),
                 ],

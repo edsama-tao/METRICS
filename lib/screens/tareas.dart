@@ -39,6 +39,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
       final response = await http.post(url, body: {'id_user': userId.toString()});
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        print('🧾 Respuesta contrato: $data');
         if (data != null && data is Map<String, dynamic>) {
           setState(() {
             contratoData = data;
@@ -129,7 +130,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                         contratoData?['tutor'] ?? 'Sin tutor',
                         contratoData?['estudios'] ?? 'Sin estudios',
                         contratoData?['centroFormativo'] ?? 'Sin centro',
-                        contratoData?['horasAcuerdo'] ?? '0 horas',
+                        '${contratoData?['horasAcuerdo'] ?? 0} horas',
                         contratoData?['modalidad'] ?? 'Desconocida',
                       ),
                     ],
@@ -193,7 +194,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
               items: [
                 const DropdownMenuItem<int?>(value: null, child: Text("")),
                 ...List.generate(4, (i) => i + 1)
-                    .map((e) => DropdownMenuItem(value: e, child: Text('\$e h')))
+                    .map((e) => DropdownMenuItem(value: e, child: Text('$e h')))
               ],
               onChanged: (value) {
                 int anterior = horasSeleccionadas[index] ?? 0;
