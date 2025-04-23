@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'custom_drawer.dart'; // Asegúrate de que esté importado correctamente
-import 'home.dart'; // Importa la pantalla Home // Importa la pantalla Tareas (ActividadDiariaScreen)
-import 'avisos.dart'; // Importa la pantalla Avisos
+import 'custom_drawer.dart';
+import 'home.dart';
+import 'avisos.dart';
 
-class ActividadDiariaScreen extends StatelessWidget {
+class ActividadDiariaScreen extends StatefulWidget {
   const ActividadDiariaScreen({super.key});
+
+  @override
+  State<ActividadDiariaScreen> createState() => _ActividadDiariaScreenState();
+}
+
+class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
+  final List<int?> horasSeleccionadas = List.filled(8, null);
+
+  int get totalHoras => horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
 
   @override
   Widget build(BuildContext context) {
     final String fechaActual = DateFormat('dd/MM/yyyy').format(DateTime.now());
     final String mesActual = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(DateTime.now());
 
-    // Datos del usuario (hardcodeados para la demostración)
     String nombre = 'Juan Pérez';
     String empresa = 'TechCorp';
     String tutor = 'Carlos García';
@@ -22,14 +30,14 @@ class ActividadDiariaScreen extends StatelessWidget {
     String modalidad = 'Remoto';
 
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco para el contenido
-      endDrawer: const CustomDrawer(), // Barra lateral
+      backgroundColor: Colors.white,
+      endDrawer: const CustomDrawer(),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFF3C41), // Barra superior igual a Home
+        backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
         title: Center(
           child: Transform.scale(
-            scale: 1.4, // Tamaño del logo igual que en Home
+            scale: 1.4,
             child: Image.asset(
               'assets/imagelogo.png',
               height: 40,
@@ -67,7 +75,7 @@ class ActividadDiariaScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            ...List.generate(8, (index) => buildTareaRow()),
+            ...List.generate(8, (index) => buildTareaRow(index)),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,7 +90,7 @@ class ActividadDiariaScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFFFF3C41), // Barra inferior igual a Home
+        color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -92,7 +100,7 @@ class ActividadDiariaScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ActividadDiariaScreen(), // Navega a la pantalla de tareas
+                    builder: (_) => const ActividadDiariaScreen(),
                   ),
                 );
               },
@@ -102,7 +110,7 @@ class ActividadDiariaScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()), // Va a Home
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
                 );
               },
             ),
@@ -111,7 +119,7 @@ class ActividadDiariaScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Va a la pantalla de avisos
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
                 );
               },
             ),
@@ -121,7 +129,7 @@ class ActividadDiariaScreen extends StatelessWidget {
     );
   }
 
-  static Widget buildTareaRow() {
+  Widget buildTareaRow(int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -129,24 +137,44 @@ class ActividadDiariaScreen extends StatelessWidget {
           Expanded(
             flex: 3,
             child: TextField(
-              decoration: InputDecoration(
-                hintText: 'DESCRIPCIÓN TAREA',
+              decoration: const InputDecoration(
+                hintText: 'ESCRIBE DESCRIPCIÓN...',
                 filled: true,
                 fillColor: Colors.white,
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
               ),
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
             flex: 1,
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'XX',
+            child: DropdownButtonFormField<int?>(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
                 filled: true,
-                fillColor: Colors.grey.shade300,
-                border: const OutlineInputBorder(),
               ),
+              hint: const Text("Horas"),
+              value: horasSeleccionadas[index],
+              items: [
+                const DropdownMenuItem<int?>(value: null, child: Text("")),
+                ...List.generate(4, (i) => i + 1)
+                    .map((e) => DropdownMenuItem(value: e, child: Text('$e h')))
+              ],
+              onChanged: (value) {
+                int anterior = horasSeleccionadas[index] ?? 0;
+                int nuevo = value ?? 0;
+                int nuevoTotal = totalHoras - anterior + nuevo;
+
+                if (nuevoTotal <= 4) {
+                  setState(() {
+                    horasSeleccionadas[index] = value;
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No puedes asignar más de 4 horas en total.')),
+                  );
+                }
+              },
             ),
           ),
         ],
@@ -154,7 +182,7 @@ class ActividadDiariaScreen extends StatelessWidget {
     );
   }
 
-  static Widget buildBoton(String texto, Color color) {
+  Widget buildBoton(String texto, Color color) {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
