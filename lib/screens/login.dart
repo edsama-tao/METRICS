@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'registro.dart';
 import 'home.dart';
+import 'package:metrics/screens/global.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,10 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: {
-          'nombreUsuario': user,
-          'contrasena': pass,
-        },
+        body: {'nombreUsuario': user, 'contrasena': pass},
       );
 
       final cleanedResponse = response.body.replaceAll('\uFEFF', '').trim();
@@ -41,9 +39,16 @@ class _LoginScreenState extends State<LoginScreen> {
       final result = jsonDecode(cleanedResponse);
 
       if (result['status'] == 'success') {
+        globalUserId =
+            result['id_user'] is int
+                ? result['id_user']
+                : int.parse(result['id_user'].toString());
+
+        print('✅ globalUserId asignado: $globalUserId');
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       } else {
         _mostrarError(result['message'] ?? 'Usuario o contraseña incorrectos.');
@@ -56,16 +61,17 @@ class _LoginScreenState extends State<LoginScreen> {
   void _mostrarError(String mensaje) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error'),
-        content: Text(mensaje),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text(mensaje),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -148,8 +154,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _login,
                     child: const Text(
                       'LOGIN',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -167,10 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       'CREAR CUENTA DE USUARIO',
                       style: TextStyle(color: Colors.blueAccent),
                     ),
-                  )
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -187,9 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
       filled: true,
       fillColor: Colors.white70,
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
     );
   }
 }

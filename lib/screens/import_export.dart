@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metrics/screens/global.dart';
 import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
@@ -54,7 +55,7 @@ class ImportExportScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ActividadDiariaScreen(), // Navega a TareasScreen
+                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
                   ),
                 );
               },

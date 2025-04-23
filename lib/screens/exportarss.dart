@@ -3,6 +3,7 @@ import 'package:metrics/screens/custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
 import 'tareas.dart'; // Importa TareasScreen
+import 'package:metrics/screens/global.dart';
 
 class ExportDataScreen extends StatefulWidget {
   const ExportDataScreen({super.key});
@@ -56,10 +57,11 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
         ),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
           ),
         ],
       ),
@@ -108,17 +110,22 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 14,
+                  ),
                 ),
                 onPressed: () {
-                  final selected = _fields.entries
-                      .where((e) => e.value)
-                      .map((e) => e.key)
-                      .toList();
+                  final selected =
+                      _fields.entries
+                          .where((e) => e.value)
+                          .map((e) => e.key)
+                          .toList();
                   if (selected.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Seleccione al menos un dato')),
+                      const SnackBar(
+                        content: Text('Seleccione al menos un dato'),
+                      ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +160,7 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ActividadDiariaScreen(), // Navega a TareasScreen
+                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
                   ),
                 );
               },
@@ -163,7 +170,9 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()), // Va a Home
+                  MaterialPageRoute(
+                    builder: (_) => const HomeScreen(),
+                  ), // Va a Home
                 );
               },
             ),
@@ -172,7 +181,9 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Va a la pantalla de avisos
+                  MaterialPageRoute(
+                    builder: (_) => const AvisosScreen(),
+                  ), // Va a la pantalla de avisos
                 );
               },
             ),

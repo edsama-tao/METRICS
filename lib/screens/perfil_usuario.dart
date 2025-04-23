@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metrics/screens/global.dart';
 import 'home.dart';
 import 'avisos.dart';
 import 'custom_drawer.dart';
@@ -99,7 +100,7 @@ class PerfilUsuarioScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ActividadDiariaScreen(), // Navega a la pantalla de tareas
+                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
                   ),
                 );
               },

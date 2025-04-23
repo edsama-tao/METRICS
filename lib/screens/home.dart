@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metrics/screens/global.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'custom_drawer.dart';
 import 'avisos.dart';
@@ -120,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ActividadDiariaScreen(), // Aquí se realiza la navegación correctamente
+                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
                   ),
                 );
               },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:metrics/screens/global.dart';
 import 'dart:convert';
 import 'tareas.dart'; // Asegúrate de que la ruta de TareasScreen esté correctamente importada
 
@@ -160,7 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ActividadDiariaScreen(), // Navega a TareasScreen
+                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
                   ),
                 );
               },

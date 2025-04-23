@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
 
 class ActividadDiariaScreen extends StatefulWidget {
-  const ActividadDiariaScreen({super.key});
+  final int userId;
+
+  const ActividadDiariaScreen({super.key, required this.userId});
 
   @override
   State<ActividadDiariaScreen> createState() => _ActividadDiariaScreenState();
@@ -14,20 +19,53 @@ class ActividadDiariaScreen extends StatefulWidget {
 class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   final List<int?> horasSeleccionadas = List.filled(8, null);
 
+  Map<String, dynamic>? contratoData;
+  bool isLoading = true;
+
   int get totalHoras => horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
+
+  @override
+  void initState() {
+    super.initState();
+    cargarContrato();
+  }
+
+  Future<void> cargarContrato() async {
+    final userId = widget.userId;
+    final url = Uri.parse("http://10.100.0.51/flutter_api/get_contrato_usuario.php");
+
+    try {
+      print('🟨 ID que se va a enviar: ${widget.userId}');
+      final response = await http.post(url, body: {'id_user': userId.toString()});
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data != null && data is Map<String, dynamic>) {
+          setState(() {
+            contratoData = data;
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error al cargar contrato: \$e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final String fechaActual = DateFormat('dd/MM/yyyy').format(DateTime.now());
     final String mesActual = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(DateTime.now());
-
-    String nombre = 'Juan Pérez';
-    String empresa = 'TechCorp';
-    String tutor = 'Carlos García';
-    String estudios = 'Ingeniería en Software';
-    String centroFormativo = 'Instituto XYZ';
-    String horasAcuerdo = '30 horas';
-    String modalidad = 'Remoto';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -38,11 +76,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         title: Center(
           child: Transform.scale(
             scale: 1.4,
-            child: Image.asset(
-              'assets/imagelogo.png',
-              height: 40,
-              fit: BoxFit.contain,
-            ),
+            child: Image.asset('assets/imagelogo.png', height: 40, fit: BoxFit.contain),
           ),
         ),
         actions: [
@@ -54,41 +88,53 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(mesActual.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text('ACTIVIDAD DÍA $fechaActual'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            ...List.generate(8, (index) => buildTareaRow(index)),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                buildBoton('ABSCENCIA', Colors.grey.shade400),
-                buildBoton('ALMACENAR', Colors.grey.shade400),
-              ],
-            ),
-            const SizedBox(height: 30),
-            buildDatosAlumno(nombre, empresa, tutor, estudios, centroFormativo, horasAcuerdo, modalidad),
-          ],
-        ),
-      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : contratoData == null
+              ? const Center(child: Text("No se encontró el contrato."))
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(mesActual.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text('ACTIVIDAD DÍA $fechaActual'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ...List.generate(8, (index) => buildTareaRow(index)),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          buildBoton('ABSCENCIA', Colors.grey.shade400),
+                          buildBoton('ALMACENAR', Colors.grey.shade400),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                      buildDatosAlumno(
+                        contratoData?['nombre'] ?? 'Sin nombre',
+                        contratoData?['empresa'] ?? 'Sin empresa',
+                        contratoData?['tutor'] ?? 'Sin tutor',
+                        contratoData?['estudios'] ?? 'Sin estudios',
+                        contratoData?['centroFormativo'] ?? 'Sin centro',
+                        contratoData?['horasAcuerdo'] ?? '0 horas',
+                        contratoData?['modalidad'] ?? 'Desconocida',
+                      ),
+                    ],
+                  ),
+                ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
@@ -97,30 +143,19 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
             IconButton(
               icon: const Icon(Icons.calendar_month, color: Colors.white),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ActividadDiariaScreen(),
-                  ),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ActividadDiariaScreen(userId: widget.userId)));
               },
             ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
-                );
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
               },
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
               onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
-                );
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AvisosScreen()));
               },
             ),
           ],
@@ -158,7 +193,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
               items: [
                 const DropdownMenuItem<int?>(value: null, child: Text("")),
                 ...List.generate(4, (i) => i + 1)
-                    .map((e) => DropdownMenuItem(value: e, child: Text('$e h')))
+                    .map((e) => DropdownMenuItem(value: e, child: Text('\$e h')))
               ],
               onChanged: (value) {
                 int anterior = horasSeleccionadas[index] ?? 0;
