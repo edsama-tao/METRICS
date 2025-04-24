@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:metrics/screens/global.dart';
 import 'dart:convert';
-import 'tareas.dart'; // Asegúrate de que la ruta de TareasScreen esté correctamente importada
+import 'tareas.dart';
+import 'custom_drawer.dart';
+ // Asegúrate de que la ruta de TareasScreen esté correctamente importada
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -23,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
 
   Future<void> registrarUsuario() async {
-    final url = Uri.parse("http://10.100.0.51/flutter_api/registrar_usuario.php");
+    final url = Uri.parse("http://10.100.2.169/flutter_api/registrar_usuario.php");
 
     try {
       final respuesta = await http.post(
@@ -72,6 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFF3C41),
+      endDrawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
@@ -133,16 +136,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                   },
                   child: const Text(
-                    'REGISTRARSE',
+                    'REGISTRAR USUARIO',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    '¿YA TIENES CUENTA? INICIAR SESIÓN',
-                    style: TextStyle(color: Colors.blueAccent),
                   ),
                 ),
               ],

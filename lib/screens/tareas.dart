@@ -32,7 +32,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 
   Future<void> cargarContrato() async {
     final userId = widget.userId;
-    final url = Uri.parse("http://10.100.0.51/flutter_api/get_contrato_usuario.php");
+    final url = Uri.parse("http://10.100.2.169/flutter_api/get_contrato_usuario.php");
 
     try {
       print('🟨 ID que se va a enviar: ${widget.userId}');

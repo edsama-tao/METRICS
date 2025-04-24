@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'perfil_usuario.dart';  // Asegúrate de que la ruta sea correcta
+import 'perfil_usuario.dart';
 import 'import_export.dart';
 import 'login.dart';
+import 'registro.dart'; // 👈 Asegúrate de que esta pantalla exista
+import 'package:metrics/screens/global.dart'; // 👈 Necesario para acceder a globalTipoUser
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -16,7 +18,7 @@ class CustomDrawer extends StatelessWidget {
           _buildDrawerButton("Perfil", Icons.person, () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => PerfilUsuarioScreen()), // Aquí ya es correcto
+              MaterialPageRoute(builder: (_) => PerfilUsuarioScreen()),
             );
           }, context),
           _buildDrawerButton("Importar/Exportar", Icons.import_export, () {
@@ -25,6 +27,13 @@ class CustomDrawer extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const ImportExportScreen()),
             );
           }, context),
+          if (globalTipoUser == 'admin') // 👈 Solo admins verán este botón
+            _buildDrawerButton("Registrar Usuario", Icons.person_add, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => RegisterScreen()),
+              );
+            }, context),
           _buildDrawerButton("Cerrar Sesión", Icons.logout, () {
             Navigator.pushReplacement(
               context,
@@ -58,3 +67,4 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 }
+

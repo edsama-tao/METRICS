@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
     print('Usuario: $user');
     print('Contraseña: $pass');
 
-    final url = Uri.parse("http://10.100.0.51/flutter_api/login_usuario.php");
+    final url = Uri.parse("http://10.100.2.169/flutter_api/login_usuario.php");
 
     try {
       final response = await http.post(
@@ -60,16 +60,18 @@ class _LoginScreenState extends State<LoginScreen> {
         globalUserId = result['id_user'] is int
             ? result['id_user']
             : int.parse(result['id_user'].toString());
+        globalTipoUser = result['tipoUser'].toString(); // 👈 Guardamos tipoUser
 
-        // Guardar usuario si se marcó la casilla
         final prefs = await SharedPreferences.getInstance();
         if (recordarUsuario) {
           await prefs.setString('usuarioRecordado', user);
         } else {
           await prefs.remove('usuarioRecordado');
         }
+        await prefs.setString('tipoUser', globalTipoUser); // 👈 Guardamos en SharedPreferences
 
         print('✅ globalUserId asignado: $globalUserId');
+        print('✅ globalTipoUser asignado: $globalTipoUser');
 
         Navigator.pushReplacement(
           context,
