@@ -3,7 +3,7 @@ import 'package:metrics/screens/global.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'custom_drawer.dart';
 import 'avisos.dart';
-import 'tareas.dart'; // Asegúrate de que esta importación sea correcta
+import 'tareas.dart'; 
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Asegúrate de que AvisosScreen esté correctamente importado
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
                 );
               },
             ),

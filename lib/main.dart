@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'screens/login.dart';
-import 'screens/registro.dart'; // Asegúrate de que la ruta de RegisterScreen sea la correcta
+import 'screens/registro.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('es_ES', null); // Inicializa la localización para intl
+  await initializeDateFormatting('es_ES', null); 
   runApp(const MyApp());
 }
 
@@ -23,12 +23,12 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,  // Localización para Material
         GlobalWidgetsLocalizations.delegate,   // Localización para Widgets
-        GlobalCupertinoLocalizations.delegate, // Localización para Cupertino
+        GlobalCupertinoLocalizations.delegate, 
       ],
       initialRoute: '/login',
       routes: {
         '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(), // Opcional: habilita navegación al registro
+        '/register': (context) => const RegisterScreen(), //navegación al registro
       },
     );
   }

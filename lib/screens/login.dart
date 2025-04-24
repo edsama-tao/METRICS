@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
         globalUserId = result['id_user'] is int
             ? result['id_user']
             : int.parse(result['id_user'].toString());
-        globalTipoUser = result['tipoUser'].toString(); // 👈 Guardamos tipoUser
+        globalTipoUser = result['tipoUser'].toString(); // Guardamos tipoUser
 
         final prefs = await SharedPreferences.getInstance();
         if (recordarUsuario) {
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           await prefs.remove('usuarioRecordado');
         }
-        await prefs.setString('tipoUser', globalTipoUser); // 👈 Guardamos en SharedPreferences
+        await prefs.setString('tipoUser', globalTipoUser); //global guardamos en SharedPreferences
 
         print('✅ globalUserId asignado: $globalUserId');
         print('✅ globalTipoUser asignado: $globalTipoUser');

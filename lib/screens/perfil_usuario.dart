@@ -3,7 +3,7 @@ import 'package:metrics/screens/global.dart';
 import 'home.dart';
 import 'avisos.dart';
 import 'custom_drawer.dart';
-import 'tareas.dart'; // Importa TareasScreen
+import 'tareas.dart'; 
 
 class PerfilUsuarioScreen extends StatelessWidget {
   final Map<String, String> usuario = {

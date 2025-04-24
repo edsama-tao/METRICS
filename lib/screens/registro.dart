@@ -4,7 +4,7 @@ import 'package:metrics/screens/global.dart';
 import 'dart:convert';
 import 'tareas.dart';
 import 'custom_drawer.dart';
- // Asegúrate de que la ruta de TareasScreen esté correctamente importada
+ 
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -164,13 +164,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
-                // Acción para el icono de Home
+                // Acción icono de Home
               },
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
               onPressed: () {
-                // Acción para el icono de Avisos
+                // Acción icono de Avisos
               },
             ),
           ],

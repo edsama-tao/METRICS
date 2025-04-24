@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:metrics/screens/custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
-import 'tareas.dart'; // Importa TareasScreen
+import 'tareas.dart';
 import 'package:metrics/screens/global.dart';
 
 class ExportDataScreen extends StatefulWidget {
