@@ -3,7 +3,7 @@ import 'package:metrics/screens/global.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'custom_drawer.dart';
 import 'avisos.dart';
-import 'tareas.dart'; 
+import 'tareas.dart'; // Importamos tareas.dart (ActividadDiariaScreen)
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,8 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 hintText: "Buscar Usuario",
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -71,6 +70,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   _focusedDay = focusedDay;
                 });
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                if (_isSameDay(selectedDay, DateTime.now())) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ActividadDiariaScreen(userId: globalUserId),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Solo puedes acceder a las tareas del día de hoy.')),
+                  );
+                }
               },
               calendarStyle: CalendarStyle(
                 todayDecoration: BoxDecoration(
@@ -92,15 +105,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (context, day, _) {
-                  if (day.month == 3 &&
-                      [24, 25, 26, 27, 28].contains(day.day)) {
+                  if (day.month == 3 && [24, 25, 26, 27, 28].contains(day.day)) {
                     return _buildDayWithLabel(
                       day,
                       day.day <= 28 ? "Activ" : "Infor",
                       day.day <= 28 ? Colors.green : Colors.blue,
                     );
-                  } else if (day.month == 3 &&
-                      [10, 11, 12, 13, 14].contains(day.day)) {
+                  } else if (day.month == 3 && [10, 11, 12, 13, 14].contains(day.day)) {
                     return _buildDayWithLabel(day, "Activ", Colors.green);
                   }
                   return null;
@@ -166,5 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     );
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }

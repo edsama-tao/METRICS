@@ -17,7 +17,32 @@ class ActividadDiariaScreen extends StatefulWidget {
 }
 
 class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
-  final List<int?> horasSeleccionadas = List.filled(8, null);
+  final List<int?> horasSeleccionadas = List.filled(50, null);
+
+  final List<String> actividades = [
+    "1.1. Treball sobre diferents sistemes informàtics, identificant en cada cas el seu maquinari, sistemes operatius i aplicacions instal·lades i les restriccions o condicions específiques d'ús.",
+    "1.2. Gestió de la informació en diferents sistemes, aplicant mesures que assegurin la integritat i disponibilitat de les dades.",
+    "1.3. Participació en la gestió de recursos en xarxa identificant les restriccions de seguretat existents.",
+    "1.4. Utilització d'aplicacions informàtiques per elaborar, distribuir i mantenir documentació tècnica i d'assistència a usuaris.",
+    "1.5. Utilització d'entorns de desenvolupament per a editar, depurar, provar i documentar codi, a més de generar executables.",
+    "1.6. Gestió d'entorns de desenvolupament, afegint i emprant complements específics en les diferents fases de projectes de desenvolupament.",
+    "2.1. Interpretació del disseny lògic de bases de dades que asseguren l'accessibilitat a les dades.",
+    "2.2. Participació en la materialització del disseny lògic sobre algun sistema gestor de bases de dades.",
+    "2.3. Utilització de bases de dades aplicant tècniques per mantenir la persistència de la informació.",
+    "2.4. Execució de consultes directes i procediments capaços de gestionar i emmagatzemar objectes i dades de la base de dades.",
+    "2.5. Establiment de connexions amb bases de dades per executar consultes i recuperar els resultats en objectes d'accés a dades.",
+    "2.6. Desenvolupament de formularis i informes com a part d'aplicacions que gestionen de forma integral la informació emmagatzemada en una base de dades.",
+    "2.8. Elaboració de la documentació associada a la gestió de les bases de dades emprades i les aplicacions desenvolupades.",
+    "4.1. Participació en el desenvolupament de la interfície per a aplicacions multiplataforma emprant components visuals estàndard o definint components personalitzats.",
+    "4.3. Creació de tutorials i manuals d'usuari, d'instal·lació i de configuració de les aplicacions desenvolupades.",
+    "4.4. Creació de paquets d'aplicacions per a la seva distribució amb processos d'autoinstal·lació i amb tots els elements d'ajuda i assistència incorporats.",
+    "4.6. Participació en la definició i l'elaboració de la documentació i de la resta de components utilitzats en els protocols d'assistència a l'usuari de l'aplicació.",
+    "5.1. Reconeixement de la funcionalitat dels sistemes ERP-CRM en un supòsit empresarial real, avaluant la utilitat de cada un dels seus mòduls.",
+    "5.2. Participació en la instal·lació i configuració de sistemes ERP-CRM.",
+    "5.3. Valoració i anàlisi del procés d'adaptació d'un sistema ERP-CRM als requeriments d'un supòsit empresarial real.",
+    "5.4. Intervenció en la gestió de la informació emmagatzemada en sistemes ERP-CRM, garantint-ne la integritat.",
+    "5.5. Col·laboració en el desenvolupament de components personalitzats per a un sistema ERP-CRM, utilitzant el llenguatge de programació proporcionat pel sistema."
+  ];
 
   Map<String, dynamic>? contratoData;
   bool isLoading = true;
@@ -35,11 +60,9 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     final url = Uri.parse("http://10.100.2.169/flutter_api/get_contrato_usuario.php");
 
     try {
-      print('🟨 ID que se va a enviar: ${widget.userId}');
       final response = await http.post(url, body: {'id_user': userId.toString()});
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('🧾 Respuesta contrato: $data');
         if (data != null && data is Map<String, dynamic>) {
           setState(() {
             contratoData = data;
@@ -56,7 +79,6 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         });
       }
     } catch (e) {
-      print('Error al cargar contrato: \$e');
       setState(() {
         isLoading = false;
       });
@@ -114,7 +136,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      ...List.generate(8, (index) => buildTareaRow(index)),
+                      ...List.generate(actividades.length, (index) => buildTareaRow(index)),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -172,12 +194,16 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         children: [
           Expanded(
             flex: 3,
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'ESCRIBE DESCRIPCIÓN...',
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                actividades.length > index ? actividades[index] : "Actividad no definida",
+                style: const TextStyle(fontSize: 14),
               ),
             ),
           ),
@@ -189,19 +215,33 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                 border: OutlineInputBorder(),
                 filled: true,
               ),
-              hint: const Text("Horas"),
+              hint: const Text("Duración"),
               value: horasSeleccionadas[index],
               items: [
                 const DropdownMenuItem<int?>(value: null, child: Text("")),
-                ...List.generate(4, (i) => i + 1)
-                    .map((e) => DropdownMenuItem(value: e, child: Text('$e h')))
+                ...List.generate(16, (i) => (i + 1) * 15).map((minutos) {
+                  final horas = minutos ~/ 60;
+                  final mins = minutos % 60;
+                  String texto;
+                  if (horas > 0 && mins > 0) {
+                    texto = '${horas}h ${mins}min';
+                  } else if (horas > 0) {
+                    texto = '${horas}h';
+                  } else {
+                    texto = '${mins}min';
+                  }
+                  return DropdownMenuItem(
+                    value: minutos,
+                    child: Text(texto),
+                  );
+                }).toList(),
               ],
               onChanged: (value) {
                 int anterior = horasSeleccionadas[index] ?? 0;
                 int nuevo = value ?? 0;
                 int nuevoTotal = totalHoras - anterior + nuevo;
 
-                if (nuevoTotal <= 4) {
+                if (nuevoTotal <= 240) {
                   setState(() {
                     horasSeleccionadas[index] = value;
                   });
