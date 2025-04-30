@@ -85,6 +85,38 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     }
   }
 
+  Future<void> enviarActividades() async {
+    final url = Uri.parse("http://10.100.2.169/flutter_api/insertar_tareas.php");
+
+    for (int i = 0; i < actividades.length; i++) {
+      final minutos = horasSeleccionadas[i];
+      if (minutos != null && minutos > 0) {
+        final response = await http.post(url, body: {
+          'id_user': widget.userId.toString(),
+          'id_tarea': (i + 1).toString(),
+          'minutos': minutos.toString(),
+        });
+
+        if (response.statusCode != 200 || !response.body.contains("success")) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error al guardar tarea ${i + 1}")),
+          );
+          return;
+        }
+      }
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Actividades guardadas correctamente")),
+    );
+
+    setState(() {
+      for (int i = 0; i < horasSeleccionadas.length; i++) {
+        horasSeleccionadas[i] = null;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final String fechaActual = DateFormat('dd/MM/yyyy').format(DateTime.now());
@@ -260,7 +292,15 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 
   Widget buildBoton(String texto, Color color) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        if (texto == 'ALMACENAR') {
+          enviarActividades();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Funcionalidad no implementada")),
+          );
+        }
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -307,3 +347,4 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     );
   }
 }
+

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:metrics/screens/global.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'custom_drawer.dart';
 import 'avisos.dart';
-import 'tareas.dart'; // Importamos tareas.dart (ActividadDiariaScreen)
+import 'tareas.dart'; // ActividadDiariaScreen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +17,35 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DateTime _focusedDay = DateTime.now();
+  Map<DateTime, bool> completedDays = {};
+
+  @override
+  void initState() {
+    super.initState();
+    cargarDiasCompletados();
+  }
+
+  Future<void> cargarDiasCompletados() async {
+    final response = await http.post(
+      Uri.parse('http://10.100.2.169/flutter_api/get_dias_completados.php'),
+      body: {'id_user': globalUserId.toString()},
+    );
+
+    if (response.statusCode == 200) {
+      final List fechas = json.decode(response.body);
+      setState(() {
+        completedDays.clear();
+        for (final fecha in fechas) {
+          final date = DateTime.parse(fecha);
+          completedDays[DateTime(date.year, date.month, date.day)] = true;
+        }
+      });
+    }
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +67,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
           ),
         ],
       ),
@@ -52,7 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 hintText: "Buscar Usuario",
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -62,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 10),
           Expanded(
             child: TableCalendar(
+              locale: 'es_ES',
               focusedDay: _focusedDay,
               firstDay: DateTime.utc(2024, 1, 1),
               lastDay: DateTime.utc(2026, 12, 31),
@@ -76,44 +113,73 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ActividadDiariaScreen(userId: globalUserId),
+                      builder:
+                          (_) => ActividadDiariaScreen(userId: globalUserId),
                     ),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Solo puedes acceder a las tareas del día de hoy.')),
+                    const SnackBar(
+                      content: Text(
+                        'Solo puedes acceder a las tareas del día de hoy.',
+                      ),
+                    ),
                   );
                 }
               },
-              calendarStyle: CalendarStyle(
-                todayDecoration: BoxDecoration(
-                  color: Colors.redAccent,
-                  shape: BoxShape.circle,
-                ),
-                selectedDecoration: BoxDecoration(
-                  color: Colors.blueAccent,
-                  shape: BoxShape.circle,
-                ),
-                markerDecoration: BoxDecoration(
-                  color: Colors.green,
-                  shape: BoxShape.rectangle,
-                ),
-              ),
               headerStyle: const HeaderStyle(
                 titleCentered: true,
                 formatButtonVisible: false,
               ),
+
+              calendarStyle: const CalendarStyle(
+                todayDecoration: BoxDecoration(
+                  color: Colors.redAccent, // ⬅️ Día actual en rojo como antes
+                  shape: BoxShape.circle,
+                ),
+                selectedDecoration: BoxDecoration(color: Colors.transparent),
+              ),
+
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (context, day, _) {
-                  if (day.month == 3 && [24, 25, 26, 27, 28].contains(day.day)) {
-                    return _buildDayWithLabel(
-                      day,
-                      day.day <= 28 ? "Activ" : "Infor",
-                      day.day <= 28 ? Colors.green : Colors.blue,
-                    );
-                  } else if (day.month == 3 && [10, 11, 12, 13, 14].contains(day.day)) {
-                    return _buildDayWithLabel(day, "Activ", Colors.green);
+                  final isWeekend =
+                      day.weekday == DateTime.saturday ||
+                      day.weekday == DateTime.sunday;
+                  final isPastOrToday = !day.isAfter(DateTime.now());
+                  final isToday = _isSameDay(day, DateTime.now());
+                  final dayKey = DateTime(day.year, day.month, day.day);
+                  final isCompleted = completedDays[dayKey] ?? false;
+
+                  // Día actual se marca en rojo por defecto
+                  if (isToday) return null;
+
+                  Color? bgColor;
+
+                  if (isCompleted) {
+                    bgColor = Colors.green;
+                  } else if (!isWeekend && isPastOrToday) {
+                    bgColor = Colors.orange;
                   }
+
+                  if (bgColor != null) {
+                    return Container(
+                      margin: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${day.day}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }
+
                   return null;
                 },
               ),
@@ -139,9 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {
-                // Ya estás en Home
-              },
+              onPressed: () {},
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
@@ -156,30 +220,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildDayWithLabel(DateTime day, String label, Color color) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('${day.day}'),
-        Container(
-          margin: const EdgeInsets.only(top: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 10),
-          ),
-        ),
-      ],
-    );
-  }
-
-  bool _isSameDay(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }
