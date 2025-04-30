@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:metrics/screens/avisos.dart';
 import 'package:metrics/screens/global.dart';
+import 'package:metrics/screens/import_page.dart';
 import 'custom_drawer.dart';
 import 'home.dart';
-import 'avisos.dart';
-import 'exportarss.dart'; 
-import 'tareas.dart'; 
+import 'exportarss.dart';
+import 'tareas.dart';
 
 class ImportExportScreen extends StatelessWidget {
   const ImportExportScreen({super.key});
@@ -39,9 +40,17 @@ class ImportExportScreen extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: 60),
-          _buildRoundedButton(context, 'IMPORT'),
+          _buildRoundedButton(
+            context,
+            label: 'IMPORT',
+            destination: ImportExcelScreen(),
+          ),
           const SizedBox(height: 30),
-          _buildRoundedButton(context, 'EXPORT'),
+          _buildRoundedButton(
+            context,
+            label: 'EXPORT',
+            destination: const ExportDataScreen(),
+          ),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
@@ -65,7 +74,7 @@ class ImportExportScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()), // Va a Home
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
                 );
               },
             ),
@@ -74,7 +83,7 @@ class ImportExportScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()), // Va a la pantalla de avisos
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
                 );
               },
             ),
@@ -84,7 +93,11 @@ class ImportExportScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildRoundedButton(BuildContext context, String label) {
+  static Widget _buildRoundedButton(
+    BuildContext context, {
+    required String label,
+    required Widget destination,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: SizedBox(
@@ -94,7 +107,7 @@ class ImportExportScreen extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const ExportDataScreen()),
+              MaterialPageRoute(builder: (_) => destination),
             );
           },
           style: ElevatedButton.styleFrom(
