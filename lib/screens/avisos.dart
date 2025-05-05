@@ -117,7 +117,7 @@ class _AvisosScreenState extends State<AvisosScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text('Notificacions',
+            const Text('NOTIFICACIONS:',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             Expanded(
