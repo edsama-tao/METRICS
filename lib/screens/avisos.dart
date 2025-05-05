@@ -22,7 +22,7 @@ class _AvisosScreenState extends State<AvisosScreen> {
   }
 
   Future<void> _cargarAvisos() async {
-    final url = Uri.parse('http://localhost/flutter_api/get_avisos_usuario.php'); // usa tu IP si es móvil
+    final url = Uri.parse('http://10.100.0.9/flutter_api/get_avisos_usuario.php'); // usa tu IP si es móvil
     try {
       final response = await http.post(url, body: {
         'id_user': globalUserId.toString(),
