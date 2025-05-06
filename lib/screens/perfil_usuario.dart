@@ -38,7 +38,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
       return;
     }
 
-    final url = Uri.parse("http://10.100.2.169/flutter_api/get_usuario.php");
+    final url = Uri.parse("http://10.100.0.9/flutter_api/get_usuario.php");
 
     try {
       final response = await http.post(url, body: {'id_user': globalUserId.toString()});

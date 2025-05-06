@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> cargarDiasCompletados() async {
     final response = await http.post(
-      Uri.parse('http://10.100.2.169/flutter_api/get_dias_completados.php'),
+      Uri.parse('http://10.100.0.9/flutter_api/get_dias_completados.php'),
       body: {'id_user': globalUserId.toString()},
     );
 

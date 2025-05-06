@@ -68,7 +68,7 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
     }
 
     try {
-      final uri = Uri.parse('http://10.100.2.169/importador_excel/import_excel.php');
+      final uri = Uri.parse('http://10.100.0.9/importador_excel/import_excel.php');
       final request = http.MultipartRequest('POST', uri);
 
       if (kIsWeb) {
