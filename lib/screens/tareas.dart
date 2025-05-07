@@ -41,13 +41,14 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     "5.2. Participació en la instal·lació i configuració de sistemes ERP-CRM.",
     "5.3. Valoració i anàlisi del procés d'adaptació d'un sistema ERP-CRM als requeriments d'un supòsit empresarial real.",
     "5.4. Intervenció en la gestió de la informació emmagatzemada en sistemes ERP-CRM, garantint-ne la integritat.",
-    "5.5. Col·laboració en el desenvolupament de components personalitzats per a un sistema ERP-CRM, utilitzant el llenguatge de programació proporcionat pel sistema."
+    "5.5. Col·laboració en el desenvolupament de components personalitzats per a un sistema ERP-CRM, utilitzant el llenguatge de programació proporcionat pel sistema.",
   ];
 
   Map<String, dynamic>? contratoData;
   bool isLoading = true;
 
-  int get totalHoras => horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
+  int get totalHoras =>
+      horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
 
   @override
   void initState() {
@@ -57,10 +58,15 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 
   Future<void> cargarContrato() async {
     final userId = widget.userId;
-    final url = Uri.parse("http://localhost/flutter_api/get_contrato_usuario.php");
+    final url = Uri.parse(
+      "http://localhost/flutter_api/get_contrato_usuario.php",
+    );
 
     try {
-      final response = await http.post(url, body: {'id_user': userId.toString()});
+      final response = await http.post(
+        url,
+        body: {'id_user': userId.toString()},
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data != null && data is Map<String, dynamic>) {
@@ -91,11 +97,14 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     for (int i = 0; i < actividades.length; i++) {
       final minutos = horasSeleccionadas[i];
       if (minutos != null && minutos > 0) {
-        final response = await http.post(url, body: {
-          'id_user': widget.userId.toString(),
-          'id_tarea': (i + 1).toString(),
-          'minutos': minutos.toString(),
-        });
+        final response = await http.post(
+          url,
+          body: {
+            'id_user': widget.userId.toString(),
+            'id_tarea': (i + 1).toString(),
+            'minutos': minutos.toString(),
+          },
+        );
 
         if (response.statusCode != 200 || !response.body.contains("success")) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -115,12 +124,18 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         horasSeleccionadas[i] = null;
       }
     });
+
+    // ✅ Indicamos que se debe actualizar al volver a HomeScreen
+    Navigator.pop(context, true);
   }
 
   @override
   Widget build(BuildContext context) {
     final String fechaActual = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    final String mesActual = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(DateTime.now());
+    final String mesActual = DateFormat(
+      'MMMM dd/MM/yyyy',
+      'es_ES',
+    ).format(DateTime.now());
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -131,65 +146,77 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         title: Center(
           child: Transform.scale(
             scale: 1.4,
-            child: Image.asset('assets/imagelogo.png', height: 40, fit: BoxFit.contain),
+            child: Image.asset(
+              'assets/imagelogo.png',
+              height: 40,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
           ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : contratoData == null
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : contratoData == null
               ? const Center(child: Text("No se encontró el contrato."))
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(mesActual.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text('ACTIVIDAD DÍA $fechaActual'),
-                          ],
-                        ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      const SizedBox(height: 20),
-                      ...List.generate(actividades.length, (index) => buildTareaRow(index)),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          buildBoton('ABSCENCIA', Colors.grey.shade400),
-                          buildBoton('ALMACENAR', Colors.grey.shade400),
+                          Text(
+                            mesActual.toUpperCase(),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text('ACTIVIDAD DÍA $fechaActual'),
                         ],
                       ),
-                      const SizedBox(height: 30),
-                      buildDatosAlumno(
-                        contratoData?['nombre'] ?? 'Sin nombre',
-                        contratoData?['empresa'] ?? 'Sin empresa',
-                        contratoData?['tutor'] ?? 'Sin tutor',
-                        contratoData?['estudios'] ?? 'Sin estudios',
-                        contratoData?['centroFormativo'] ?? 'Sin centro',
-                        '${contratoData?['horasAcuerdo'] ?? 0} horas',
-                        contratoData?['modalidad'] ?? 'Desconocida',
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 20),
+                    ...List.generate(
+                      actividades.length,
+                      (index) => buildTareaRow(index),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        buildBoton('ABSCENCIA', Colors.grey.shade400),
+                        buildBoton('ALMACENAR', Colors.grey.shade400),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    buildDatosAlumno(
+                      contratoData?['nombre'] ?? 'Sin nombre',
+                      contratoData?['empresa'] ?? 'Sin empresa',
+                      contratoData?['tutor'] ?? 'Sin tutor',
+                      contratoData?['estudios'] ?? 'Sin estudios',
+                      contratoData?['centroFormativo'] ?? 'Sin centro',
+                      '${contratoData?['horasAcuerdo'] ?? 0} horas',
+                      contratoData?['modalidad'] ?? 'Desconocida',
+                    ),
+                  ],
                 ),
+              ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
@@ -198,19 +225,31 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
             IconButton(
               icon: const Icon(Icons.calendar_month, color: Colors.white),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => ActividadDiariaScreen(userId: widget.userId)));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (_) => ActividadDiariaScreen(userId: widget.userId),
+                  ),
+                );
               },
             ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
               },
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
               onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AvisosScreen()));
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                );
               },
             ),
           ],
@@ -234,7 +273,9 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                actividades.length > index ? actividades[index] : "Actividad no definida",
+                actividades.length > index
+                    ? actividades[index]
+                    : "Actividad no definida",
                 style: const TextStyle(fontSize: 14),
               ),
             ),
@@ -262,10 +303,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                   } else {
                     texto = '${mins}min';
                   }
-                  return DropdownMenuItem(
-                    value: minutos,
-                    child: Text(texto),
-                  );
+                  return DropdownMenuItem(value: minutos, child: Text(texto));
                 }).toList(),
               ],
               onChanged: (value) {
@@ -279,7 +317,11 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                   });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No puedes asignar más de 4 horas en total.')),
+                    const SnackBar(
+                      content: Text(
+                        'No puedes asignar más de 4 horas en total.',
+                      ),
+                    ),
                   );
                 }
               },
@@ -309,11 +351,22 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     );
   }
 
-  Widget buildDatosAlumno(String nombre, String empresa, String tutor, String estudios, String centroFormativo, String horasAcuerdo, String modalidad) {
+  Widget buildDatosAlumno(
+    String nombre,
+    String empresa,
+    String tutor,
+    String estudios,
+    String centroFormativo,
+    String horasAcuerdo,
+    String modalidad,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('DATOS ALUMNO', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const Text(
+          'DATOS ALUMNO',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         const SizedBox(height: 10),
         _buildInfoRow('Nombre:', nombre),
         _buildInfoRow('Empresa:', empresa),
@@ -347,4 +400,3 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     );
   }
 }
-

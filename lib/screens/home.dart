@@ -33,13 +33,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (response.statusCode == 200) {
       final List fechas = json.decode(response.body);
+
+      print("🔄 Fechas recibidas del backend:");
+      for (final fecha in fechas) {
+        print("- $fecha");
+      }
+
       setState(() {
         completedDays.clear();
         for (final fecha in fechas) {
           final date = DateTime.parse(fecha);
-          completedDays[DateTime(date.year, date.month, date.day)] = true;
+          final soloFecha = DateTime(date.year, date.month, date.day);
+          print("✅ Marcando como completado: $soloFecha");
+          completedDays[soloFecha] = true;
         }
       });
+    } else {
+      print(
+        "❌ Error al cargar días completados. Código: ${response.statusCode}",
+      );
     }
   }
 
@@ -116,7 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder:
                           (_) => ActividadDiariaScreen(userId: globalUserId),
                     ),
-                  );
+                  ).then((value) {
+                    if (value == true) {
+                      cargarDiasCompletados(); // 🔄 Refresca los días tras volver
+                    }
+                  });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
