@@ -4,7 +4,6 @@ import 'package:metrics/screens/global.dart';
 import 'dart:convert';
 import 'tareas.dart';
 import 'custom_drawer.dart';
- 
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -25,7 +24,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
 
   Future<void> registrarUsuario() async {
-    final url = Uri.parse("http://10.100.0.9/flutter_api/registrar_usuario.php");
+    final url = Uri.parse(
+      "http://10.100.0.9/flutter_api/registrar_usuario.php",
+    );
 
     try {
       final respuesta = await http.post(
@@ -48,9 +49,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (respuesta.statusCode == 200) {
         final resultado = jsonDecode(respuesta.body);
         if (resultado['status'] == 'success') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registro exitoso')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Registro exitoso')));
           Navigator.pushReplacementNamed(context, '/login');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -59,14 +60,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error en la petición (${respuesta.statusCode})')),
+          SnackBar(
+            content: Text('Error en la petición (${respuesta.statusCode})'),
+          ),
         );
       }
     } catch (e) {
       print('Error en conexión HTTP: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error de conexión: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error de conexión: $e')));
     }
   }
 
@@ -90,10 +93,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
           ),
         ],
         leading: IconButton(
@@ -116,19 +120,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                buildTextFormField(nombreController, Icons.person, 'NOMBRE', false),
-                buildTextFormField(apellidosController, Icons.person_outline, 'APELLIDOS', false),
+                buildTextFormField(
+                  nombreController,
+                  Icons.person,
+                  'NOMBRE',
+                  false,
+                ),
+                buildTextFormField(
+                  apellidosController,
+                  Icons.person_outline,
+                  'APELLIDOS',
+                  false,
+                ),
                 buildTextFormField(dniController, Icons.badge, 'DNI', false),
-                buildTextFormField(correoController, Icons.email, 'CORREO', false),
-                buildTextFormField(telefonoController, Icons.phone, 'TELÉFONO', false),
-                buildTextFormField(usuarioController, Icons.account_circle, 'USUARIO', false),
-                buildTextFormField(passwordController, Icons.lock, 'CONTRASEÑA', true),
+                buildTextFormField(
+                  correoController,
+                  Icons.email,
+                  'CORREO',
+                  false,
+                ),
+                buildTextFormField(
+                  telefonoController,
+                  Icons.phone,
+                  'TELÉFONO',
+                  false,
+                ),
+                buildTextFormField(
+                  usuarioController,
+                  Icons.account_circle,
+                  'USUARIO',
+                  false,
+                ),
+                buildTextFormField(
+                  passwordController,
+                  Icons.lock,
+                  'CONTRASEÑA',
+                  true,
+                ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD83535),
                     minimumSize: const Size.fromHeight(50),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
@@ -156,7 +192,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
+                    builder:
+                        (_) => ActividadDiariaScreen(
+                          userId: globalUserId,
+                          fechaSeleccionada: DateTime.now(),
+                        ),
                   ),
                 );
               },
@@ -180,7 +220,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget buildTextFormField(
-      TextEditingController controller, IconData icon, String hint, bool obscure) {
+    TextEditingController controller,
+    IconData icon,
+    String hint,
+    bool obscure,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(

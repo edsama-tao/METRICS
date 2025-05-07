@@ -121,27 +121,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               onDaySelected: (selectedDay, focusedDay) {
-                if (_isSameDay(selectedDay, DateTime.now())) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => ActividadDiariaScreen(userId: globalUserId),
-                    ),
-                  ).then((value) {
-                    if (value == true) {
-                      cargarDiasCompletados(); // 🔄 Refresca los días tras volver
-                    }
-                  });
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Solo puedes acceder a las tareas del día de hoy.',
-                      ),
-                    ),
-                  );
-                }
+                final esHoy = _isSameDay(selectedDay, DateTime.now());
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (_) => ActividadDiariaScreen(
+                          userId: globalUserId,
+                          fechaSeleccionada: selectedDay,
+                          soloLectura:
+                              !esHoy, // 👈 Solo permite editar si es hoy
+                        ),
+                  ),
+                ).then((value) {
+                  if (esHoy && value == true) {
+                    cargarDiasCompletados(); // 🔄 Refresca los días tras volver si era hoy
+                  }
+                });
               },
               headerStyle: const HeaderStyle(
                 titleCentered: true,
@@ -214,7 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
+                    builder:
+                        (_) => ActividadDiariaScreen(
+                          userId: globalUserId,
+                          fechaSeleccionada: DateTime.now(),
+                        ),
                   ),
                 );
               },

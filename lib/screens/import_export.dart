@@ -30,10 +30,11 @@ class ImportExportScreen extends StatelessWidget {
         ),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
           ),
         ],
       ),
@@ -64,7 +65,11 @@ class ImportExportScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
+                    builder:
+                        (_) => ActividadDiariaScreen(
+                          userId: globalUserId,
+                          fechaSeleccionada: DateTime.now(),
+                        ),
                   ),
                 );
               },

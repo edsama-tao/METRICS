@@ -41,7 +41,10 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
     final url = Uri.parse("http://10.100.0.9/flutter_api/get_usuario.php");
 
     try {
-      final response = await http.post(url, body: {'id_user': globalUserId.toString()});
+      final response = await http.post(
+        url,
+        body: {'id_user': globalUserId.toString()},
+      );
       print('✅ Respuesta: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -94,30 +97,41 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
         ),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
           ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : usuarioData == null
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : usuarioData == null
               ? const Center(child: Text("No se encontró el usuario."))
               : ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    buildInfoTile('NOMBRE DE USUARIO', usuarioData?['nombreUsuario'] ?? ''),
-                    buildInfoTile('NOMBRE', usuarioData?['nombre'] ?? ''),
-                    buildInfoTile('APELLIDOS', usuarioData?['apellidos'] ?? ''),
-                    buildInfoTile('DNI', usuarioData?['dni'] ?? ''),
-                    buildInfoTile('CORREO', usuarioData?['correo'] ?? ''),
-                    buildInfoTile('TELÉFONO', usuarioData?['telefono'] ?? ''),
-                    buildInfoTile('FECHA NACIMIENTO', usuarioData?['fechaNacimiento'] ?? ''),
-                    buildInfoTile('TIPO DE USUARIO', usuarioData?['tipoUser'] ?? ''),
-                  ],
-                ),
+                padding: const EdgeInsets.all(20),
+                children: [
+                  buildInfoTile(
+                    'NOMBRE DE USUARIO',
+                    usuarioData?['nombreUsuario'] ?? '',
+                  ),
+                  buildInfoTile('NOMBRE', usuarioData?['nombre'] ?? ''),
+                  buildInfoTile('APELLIDOS', usuarioData?['apellidos'] ?? ''),
+                  buildInfoTile('DNI', usuarioData?['dni'] ?? ''),
+                  buildInfoTile('CORREO', usuarioData?['correo'] ?? ''),
+                  buildInfoTile('TELÉFONO', usuarioData?['telefono'] ?? ''),
+                  buildInfoTile(
+                    'FECHA NACIMIENTO',
+                    usuarioData?['fechaNacimiento'] ?? '',
+                  ),
+                  buildInfoTile(
+                    'TIPO DE USUARIO',
+                    usuarioData?['tipoUser'] ?? '',
+                  ),
+                ],
+              ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
@@ -129,7 +143,11 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ActividadDiariaScreen(userId: globalUserId),
+                    builder:
+                        (_) => ActividadDiariaScreen(
+                          userId: globalUserId,
+                          fechaSeleccionada: DateTime.now(),
+                        ),
                   ),
                 );
               },
@@ -166,11 +184,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          )
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
       ),
       child: Row(
@@ -180,18 +194,12 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
             flex: 4,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
           Expanded(
             flex: 6,
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 16),
-            ),
+            child: Text(value, style: const TextStyle(fontSize: 16)),
           ),
         ],
       ),
