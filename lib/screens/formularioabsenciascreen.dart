@@ -112,7 +112,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        final url = Uri.parse('http://10.0.2.2/flutter_api/registrar_absencia.php');
+                        final url = Uri.parse('http://10.100.0.9/flutter_api/registrar_absencia.php');
                         final response = await http.post(
                           url,
                           headers: {'Content-Type': 'application/json'},
