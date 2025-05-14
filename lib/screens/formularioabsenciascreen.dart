@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
@@ -124,7 +125,6 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
 
                         final result = jsonDecode(response.body);
                         if (result['status'] == 'success') {
-                          // Mostrar diálogo y luego ir al Home
                           await showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -143,7 +143,6 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
                             },
                           );
 
-                          // Navegar al Home después del diálogo
                           if (mounted) {
                             Navigator.pushReplacement(
                               context,
