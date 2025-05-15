@@ -24,9 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
 
   Future<void> registrarUsuario() async {
-    final url = Uri.parse(
-      "http://10.100.0.9/flutter_api/registrar_usuario.php",
-    );
+    final url = Uri.parse("http://10.100.0.9/flutter_api/registrar_usuario.php");
 
     try {
       final respuesta = await http.post(
@@ -43,15 +41,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }),
       );
 
-      print('Código HTTP: ${respuesta.statusCode}');
-      print('Respuesta del servidor: ${respuesta.body}');
-
       if (respuesta.statusCode == 200) {
         final resultado = jsonDecode(respuesta.body);
         if (resultado['status'] == 'success') {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Registro exitoso')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registro exitoso')),
+          );
           Navigator.pushReplacementNamed(context, '/login');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -60,16 +55,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error en la petición (${respuesta.statusCode})'),
-          ),
+          SnackBar(content: Text('Error en la petición (${respuesta.statusCode})')),
         );
       }
     } catch (e) {
-      print('Error en conexión HTTP: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error de conexión: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error de conexión: $e')),
+      );
     }
   }
 
@@ -93,11 +85,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         actions: [
           Builder(
-            builder:
-                (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                ),
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
           ),
         ],
         leading: IconButton(
@@ -106,77 +97,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Color(0xFFEDEDEE),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
-              ),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                buildTextFormField(
-                  nombreController,
-                  Icons.person,
-                  'NOMBRE',
-                  false,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Form(
+              key: _formKey,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEDEDEE),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
+                  ),
                 ),
-                buildTextFormField(
-                  apellidosController,
-                  Icons.person_outline,
-                  'APELLIDOS',
-                  false,
-                ),
-                buildTextFormField(dniController, Icons.badge, 'DNI', false),
-                buildTextFormField(
-                  correoController,
-                  Icons.email,
-                  'CORREO',
-                  false,
-                ),
-                buildTextFormField(
-                  telefonoController,
-                  Icons.phone,
-                  'TELÉFONO',
-                  false,
-                ),
-                buildTextFormField(
-                  usuarioController,
-                  Icons.account_circle,
-                  'USUARIO',
-                  false,
-                ),
-                buildTextFormField(
-                  passwordController,
-                  Icons.lock,
-                  'CONTRASEÑA',
-                  true,
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD83535),
-                    minimumSize: const Size.fromHeight(50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    buildTextFormField(nombreController, Icons.person, 'NOMBRE', false),
+                    buildTextFormField(apellidosController, Icons.person_outline, 'APELLIDOS', false),
+                    buildTextFormField(dniController, Icons.badge, 'DNI', false),
+                    buildTextFormField(correoController, Icons.email, 'CORREO', false),
+                    buildTextFormField(telefonoController, Icons.phone, 'TELÉFONO', false),
+                    buildTextFormField(usuarioController, Icons.account_circle, 'USUARIO', false),
+                    buildTextFormField(passwordController, Icons.lock, 'CONTRASEÑA', true),
+                    const SizedBox(height: 30),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD83535),
+                        minimumSize: const Size.fromHeight(50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          registrarUsuario();
+                        }
+                      },
+                      child: const Text(
+                        'REGISTRAR USUARIO',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      registrarUsuario();
-                    }
-                  },
-                  child: const Text(
-                    'REGISTRAR USUARIO',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -192,26 +158,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (_) => ActividadDiariaScreen(
-                          userId: globalUserId,
-                          fechaSeleccionada: DateTime.now(),
-                        ),
+                    builder: (_) => ActividadDiariaScreen(
+                      userId: globalUserId,
+                      fechaSeleccionada: DateTime.now(),
+                    ),
                   ),
                 );
               },
             ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {
-                // Acción icono de Home
-              },
+              onPressed: () {},
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
-              onPressed: () {
-                // Acción icono de Avisos
-              },
+              onPressed: () {},
             ),
           ],
         ),

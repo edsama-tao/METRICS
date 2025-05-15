@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
-import 'formularioabsenciascreen.dart'; // ✅ IMPORTACIÓN AÑADIDA
+import 'formularioabsenciascreen.dart';
 
 class ActividadDiariaScreen extends StatefulWidget {
   final int userId;
@@ -26,7 +26,6 @@ class ActividadDiariaScreen extends StatefulWidget {
 
 class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   final List<int?> horasSeleccionadas = List.filled(50, null);
-
   final List<String> actividades = [
     "1.1. Treball sobre diferents sistemes informàtics...",
     "1.2. Gestió de la informació en diferents sistemes...",
@@ -65,11 +64,11 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Future<void> cargarContrato() async {
-    final userId = widget.userId;
-    final url = Uri.parse("http://10.100.0.9/flutter_api/get_contrato_usuario.php");
+    final url =
+        Uri.parse("http://10.100.0.9/flutter_api/get_contrato_usuario.php");
 
     try {
-      final response = await http.post(url, body: {'id_user': userId.toString()});
+      final response = await http.post(url, body: {'id_user': widget.userId.toString()});
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data != null && data is Map<String, dynamic>) {
@@ -187,10 +186,6 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                   context,
                   MaterialPageRoute(builder: (_) => const FormularioAbsenciaScreen()),
                 );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Funcionalidad no implementada")),
-                );
               }
             },
       style: ElevatedButton.styleFrom(
@@ -277,15 +272,8 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     );
   }
 
-  Widget buildDatosAlumno(
-    String nombre,
-    String empresa,
-    String tutor,
-    String estudios,
-    String centroFormativo,
-    String horasAcuerdo,
-    String modalidad,
-  ) {
+  Widget buildDatosAlumno(String nombre, String empresa, String tutor, String estudios,
+      String centroFormativo, String horasAcuerdo, String modalidad) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -329,7 +317,8 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   @override
   Widget build(BuildContext context) {
     final String fechaStr = DateFormat('dd/MM/yyyy').format(widget.fechaSeleccionada);
-    final String mesActual = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
+    final String mesActual =
+        DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -360,49 +349,54 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
           ? const Center(child: CircularProgressIndicator())
           : contratoData == null
               ? const Center(child: Text("No se encontró el contrato."))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(mesActual.toUpperCase(),
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text('ACTIVIDAD DÍA $fechaStr'),
-                          ],
-                        ),
+              : Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(mesActual.toUpperCase(),
+                                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 4),
+                                Text('ACTIVIDAD DÍA $fechaStr'),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ...List.generate(actividades.length, (index) => buildTareaRow(index)),
+                          const SizedBox(height: 10),
+                          if (!widget.soloLectura)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                buildBoton('ABSCENCIA', Colors.grey.shade400),
+                                buildBoton('ALMACENAR', Colors.grey.shade400),
+                              ],
+                            ),
+                          const SizedBox(height: 30),
+                          buildDatosAlumno(
+                            contratoData?['nombre'] ?? 'Sin nombre',
+                            contratoData?['empresa'] ?? 'Sin empresa',
+                            contratoData?['tutor'] ?? 'Sin tutor',
+                            contratoData?['estudios'] ?? 'Sin estudios',
+                            contratoData?['centroFormativo'] ?? 'Sin centro',
+                            '${contratoData?['horasAcuerdo'] ?? 0} horas',
+                            contratoData?['modalidad'] ?? 'Desconocida',
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 20),
-                      ...List.generate(actividades.length, (index) => buildTareaRow(index)),
-                      const SizedBox(height: 10),
-                      if (!widget.soloLectura)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            buildBoton('ABSCENCIA', Colors.grey.shade400),
-                            buildBoton('ALMACENAR', Colors.grey.shade400),
-                          ],
-                        ),
-                      const SizedBox(height: 30),
-                      buildDatosAlumno(
-                        contratoData?['nombre'] ?? 'Sin nombre',
-                        contratoData?['empresa'] ?? 'Sin empresa',
-                        contratoData?['tutor'] ?? 'Sin tutor',
-                        contratoData?['estudios'] ?? 'Sin estudios',
-                        contratoData?['centroFormativo'] ?? 'Sin centro',
-                        '${contratoData?['horasAcuerdo'] ?? 0} horas',
-                        contratoData?['modalidad'] ?? 'Desconocida',
-                      ),
-                    ],
+                    ),
                   ),
                 ),
       bottomNavigationBar: BottomAppBar(

@@ -6,7 +6,7 @@ import 'dart:convert';
 
 import 'custom_drawer.dart';
 import 'avisos.dart';
-import 'tareas.dart'; // ActividadDiariaScreen
+import 'tareas.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,13 +18,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime _focusedDay = DateTime.now();
   Map<DateTime, bool> completedDays = {};
-  Map<DateTime, bool> diasAusencia = {}; // ✅ NUEVO
+  Map<DateTime, bool> diasAusencia = {};
 
   @override
   void initState() {
     super.initState();
     cargarDiasCompletados();
-    cargarDiasAusencia(); // ✅ NUEVO
+    cargarDiasAusencia();
   }
 
   Future<void> cargarDiasCompletados() async {
@@ -32,55 +32,37 @@ class _HomeScreenState extends State<HomeScreen> {
       Uri.parse('http://10.100.0.9/flutter_api/get_dias_completados.php'),
       body: {'id_user': globalUserId.toString()},
     );
-
     if (response.statusCode == 200) {
       final List fechas = json.decode(response.body);
-
       setState(() {
         completedDays.clear();
         for (final fecha in fechas) {
           final date = DateTime.parse(fecha);
-          final soloFecha = DateTime(date.year, date.month, date.day);
-          completedDays[soloFecha] = true;
+          completedDays[DateTime(date.year, date.month, date.day)] = true;
         }
       });
-    } else {
-      print("❌ Error al cargar días completados. Código: ${response.statusCode}");
     }
   }
 
-  // ✅ NUEVA FUNCIÓN PARA CARGAR DÍAS CON AUSENCIA
- Future<void> cargarDiasAusencia() async {
-  final response = await http.post(
-    Uri.parse('http://10.100.0.9/flutter_api/get_dias_ausencia.php'),
-    body: {'id_user': globalUserId.toString()},
-  );
-
-  if (response.statusCode == 200) {
-    final List fechas = json.decode(response.body);
-
-    print("🟥 Fechas de ausencia recibidas:");
-    for (final f in fechas) {
-      print(" - $f");
+  Future<void> cargarDiasAusencia() async {
+    final response = await http.post(
+      Uri.parse('http://10.100.0.9/flutter_api/get_dias_ausencia.php'),
+      body: {'id_user': globalUserId.toString()},
+    );
+    if (response.statusCode == 200) {
+      final List fechas = json.decode(response.body);
+      setState(() {
+        diasAusencia.clear();
+        for (final fecha in fechas) {
+          final date = DateTime.parse(fecha);
+          diasAusencia[DateTime(date.year, date.month, date.day)] = true;
+        }
+      });
     }
-
-    setState(() {
-      diasAusencia.clear();
-      for (final fecha in fechas) {
-        final date = DateTime.parse(fecha);
-        final soloFecha = DateTime(date.year, date.month, date.day);
-        diasAusencia[soloFecha] = true;
-        print("✅ Marcado como ausente: $soloFecha");
-      }
-    });
-  } else {
-    print("❌ Error al cargar días de ausencia.");
   }
-}
 
-  bool _isSameDay(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
-  }
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 
   @override
   Widget build(BuildContext context) {
@@ -111,111 +93,107 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Buscar Usuario",
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                border: OutlineInputBorder(
+          const SizedBox(height: 20),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Container(
+                height: 450, // 👈 altura fija más pequeña
+                margin: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: TableCalendar(
-              locale: 'es_ES',
-              focusedDay: _focusedDay,
-              firstDay: DateTime.utc(2024, 1, 1),
-              lastDay: DateTime.utc(2026, 12, 31),
-              calendarFormat: CalendarFormat.month,
-              onPageChanged: (focusedDay) {
-                setState(() {
-                  _focusedDay = focusedDay;
-                });
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                final esHoy = _isSameDay(selectedDay, DateTime.now());
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ActividadDiariaScreen(
-                      userId: globalUserId,
-                      fechaSeleccionada: selectedDay,
-                      soloLectura: !esHoy,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                ).then((value) {
-                  if (esHoy && value == true) {
-                    cargarDiasCompletados();
-                    cargarDiasAusencia(); // 🔄 Refrescar días de ausencia también
-                  }
-                });
-              },
-              headerStyle: const HeaderStyle(
-                titleCentered: true,
-                formatButtonVisible: false,
-              ),
-              calendarStyle: const CalendarStyle(
-                todayDecoration: BoxDecoration(
-                  color: Colors.redAccent,
-                  shape: BoxShape.circle,
+                  ],
                 ),
-                selectedDecoration: BoxDecoration(color: Colors.transparent),
-              ),
-              calendarBuilders: CalendarBuilders(
-                defaultBuilder: (context, day, _) {
-                  final isWeekend =
-                      day.weekday == DateTime.saturday ||
-                      day.weekday == DateTime.sunday;
-                  final isPastOrToday = !day.isAfter(DateTime.now());
-                  final isToday = _isSameDay(day, DateTime.now());
-                  final dayKey = DateTime(day.year, day.month, day.day);
-                  final isCompleted = completedDays[dayKey] ?? false;
-                  final isAusente = diasAusencia[dayKey] ?? false; // ✅
-
-                  if (isToday) return null;
-
-                  Color? bgColor;
-
-                  if (isAusente) {
-                    bgColor = Colors.red; // 🔴 AUSENCIA
-                  } else if (isCompleted) {
-                    bgColor = Colors.green; // 🟢 DÍA COMPLETADO
-                  } else if (!isWeekend && isPastOrToday) {
-                    bgColor = Colors.orange; // 🟠 LABORABLE SIN TAREAS
-                  }
-
-                  if (bgColor != null) {
-                    return Container(
-                      margin: const EdgeInsets.all(6),
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${day.day}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                child: TableCalendar(
+                  locale: 'es_ES',
+                  focusedDay: _focusedDay,
+                  firstDay: DateTime.utc(2024, 1, 1),
+                  lastDay: DateTime.utc(2026, 12, 31),
+                  calendarFormat: CalendarFormat.month,
+                  onPageChanged: (focusedDay) {
+                    setState(() => _focusedDay = focusedDay);
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    final esHoy = _isSameDay(selectedDay, DateTime.now());
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ActividadDiariaScreen(
+                          userId: globalUserId,
+                          fechaSeleccionada: selectedDay,
+                          soloLectura: !esHoy,
                         ),
                       ),
-                    );
-                  }
+                    ).then((value) {
+                      if (esHoy && value == true) {
+                        cargarDiasCompletados();
+                        cargarDiasAusencia();
+                      }
+                    });
+                  },
+                  headerStyle: const HeaderStyle(
+                    titleCentered: true,
+                    formatButtonVisible: false,
+                  ),
+                  calendarStyle: const CalendarStyle(
+                    todayDecoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedDecoration:
+                        BoxDecoration(color: Colors.transparent),
+                  ),
+                  calendarBuilders: CalendarBuilders(
+                    defaultBuilder: (context, day, _) {
+                      final isWeekend = day.weekday == DateTime.saturday || day.weekday == DateTime.sunday;
+                      final isPastOrToday = !day.isAfter(DateTime.now());
+                      final isToday = _isSameDay(day, DateTime.now());
+                      final key = DateTime(day.year, day.month, day.day);
+                      final isCompleted = completedDays[key] ?? false;
+                      final isAusente = diasAusencia[key] ?? false;
 
-                  return null;
-                },
+                      if (isToday) return null;
+
+                      Color? bgColor;
+                      if (isAusente) {
+                        bgColor = Colors.red;
+                      } else if (isCompleted) {
+                        bgColor = Colors.green;
+                      } else if (!isWeekend && isPastOrToday) {
+                        bgColor = Colors.orange;
+                      }
+
+                      if (bgColor != null) {
+                        return Container(
+                          margin: const EdgeInsets.all(6),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: bgColor,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${day.day}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return null;
+                    },
+                  ),
+                ),
               ),
             ),
           ),

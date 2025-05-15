@@ -52,10 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
       final result = jsonDecode(cleanedResponse);
 
       if (result['status'] == 'success') {
-        globalUserId =
-            result['id_user'] is int
-                ? result['id_user']
-                : int.parse(result['id_user'].toString());
+        globalUserId = result['id_user'] is int
+            ? result['id_user']
+            : int.parse(result['id_user'].toString());
         globalTipoUser = result['tipoUser'].toString();
 
         final prefs = await SharedPreferences.getInstance();
@@ -81,17 +80,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void _mostrarError(String mensaje) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Error'),
-            content: Text(mensaje),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
           ),
+        ],
+      ),
     );
   }
 
@@ -102,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 60),
+            const SizedBox(height: 20), // antes 60 → ahora subimos todo
             Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -113,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20), // antes 40 → ahora más arriba el container
             Center(
               child: Card(
                 elevation: 10,

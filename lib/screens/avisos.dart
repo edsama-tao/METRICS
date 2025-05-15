@@ -22,7 +22,7 @@ class _AvisosScreenState extends State<AvisosScreen> {
   }
 
   Future<void> _cargarAvisos() async {
-    final url = Uri.parse('http://10.100.0.9/flutter_api/get_avisos_usuario.php'); // usa tu IP si es móvil
+    final url = Uri.parse('http://10.100.0.9/flutter_api/get_avisos_usuario.php');
     try {
       final response = await http.post(url, body: {
         'id_user': globalUserId.toString(),
@@ -113,39 +113,44 @@ class _AvisosScreenState extends State<AvisosScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const Text('NOTIFICACIONS:',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            Expanded(
-              child: avisos.isEmpty
-                  ? const Center(child: Text("No hi ha avisos."))
-                  : ListView.separated(
-                      itemCount: avisos.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final aviso = avisos[index];
-                        return Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            children: [
-                              aviso['icono'],
-                              const SizedBox(width: 12),
-                              Expanded(child: Text(aviso['mensaje'])),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const Text('NOTIFICACIONS:',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: avisos.isEmpty
+                      ? const Center(child: Text("No hi ha avisos."))
+                      : ListView.separated(
+                          itemCount: avisos.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final aviso = avisos[index];
+                            return Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  aviso['icono'],
+                                  const SizedBox(width: 12),
+                                  Expanded(child: Text(aviso['mensaje'])),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(

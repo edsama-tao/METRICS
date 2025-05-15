@@ -26,11 +26,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
   }
 
   Future<void> cargarDatosUsuario() async {
-    // 🛠️ Validación y depuración
-    print('📡 Enviando ID: $globalUserId');
-
     if (globalUserId == 0) {
-      print('❌ ID inválido. No se puede cargar el usuario.');
       setState(() {
         isLoading = false;
         usuarioData = null;
@@ -45,14 +41,11 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
         url,
         body: {'id_user': globalUserId.toString()},
       );
-      print('✅ Respuesta: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Si viene un error desde el backend
         if (data is Map<String, dynamic> && data.containsKey('error')) {
-          print('⚠️ Error desde PHP: ${data['error']}');
           setState(() {
             usuarioData = null;
             isLoading = false;
@@ -64,13 +57,11 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
           });
         }
       } else {
-        print('❌ Error HTTP: ${response.statusCode}');
         setState(() {
           isLoading = false;
         });
       }
     } catch (e) {
-      print('❌ Excepción: $e');
       setState(() {
         isLoading = false;
       });
@@ -97,41 +88,35 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
         ),
         actions: [
           Builder(
-            builder:
-                (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                ),
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
           ),
         ],
       ),
-      body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : usuarioData == null
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : usuarioData == null
               ? const Center(child: Text("No se encontró el usuario."))
-              : ListView(
-                padding: const EdgeInsets.all(20),
-                children: [
-                  buildInfoTile(
-                    'NOMBRE DE USUARIO',
-                    usuarioData?['nombreUsuario'] ?? '',
+              : Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: ListView(
+                      padding: const EdgeInsets.all(20),
+                      children: [
+                        buildInfoTile('NOMBRE DE USUARIO', usuarioData?['nombreUsuario'] ?? ''),
+                        buildInfoTile('NOMBRE', usuarioData?['nombre'] ?? ''),
+                        buildInfoTile('APELLIDOS', usuarioData?['apellidos'] ?? ''),
+                        buildInfoTile('DNI', usuarioData?['dni'] ?? ''),
+                        buildInfoTile('CORREO', usuarioData?['correo'] ?? ''),
+                        buildInfoTile('TELÉFONO', usuarioData?['telefono'] ?? ''),
+                        buildInfoTile('FECHA NACIMIENTO', usuarioData?['fechaNacimiento'] ?? ''),
+                        buildInfoTile('TIPO DE USUARIO', usuarioData?['tipoUser'] ?? ''),
+                      ],
+                    ),
                   ),
-                  buildInfoTile('NOMBRE', usuarioData?['nombre'] ?? ''),
-                  buildInfoTile('APELLIDOS', usuarioData?['apellidos'] ?? ''),
-                  buildInfoTile('DNI', usuarioData?['dni'] ?? ''),
-                  buildInfoTile('CORREO', usuarioData?['correo'] ?? ''),
-                  buildInfoTile('TELÉFONO', usuarioData?['telefono'] ?? ''),
-                  buildInfoTile(
-                    'FECHA NACIMIENTO',
-                    usuarioData?['fechaNacimiento'] ?? '',
-                  ),
-                  buildInfoTile(
-                    'TIPO DE USUARIO',
-                    usuarioData?['tipoUser'] ?? '',
-                  ),
-                ],
-              ),
+                ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
@@ -143,11 +128,10 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (_) => ActividadDiariaScreen(
-                          userId: globalUserId,
-                          fechaSeleccionada: DateTime.now(),
-                        ),
+                    builder: (_) => ActividadDiariaScreen(
+                      userId: globalUserId,
+                      fechaSeleccionada: DateTime.now(),
+                    ),
                   ),
                 );
               },
