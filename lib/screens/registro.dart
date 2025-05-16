@@ -4,6 +4,8 @@ import 'package:metrics/screens/global.dart';
 import 'dart:convert';
 import 'tareas.dart';
 import 'custom_drawer.dart';
+import 'home.dart';
+import 'avisos.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -69,10 +71,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFF3C41),
-      endDrawer: const CustomDrawer(),
+      drawer: const CustomDrawer(), // ✅ drawer en vez de endDrawer
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
+        leading: Builder( // ✅ Icono de menú a la izquierda
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Center(
           child: Transform.scale(
             scale: 1.4,
@@ -84,17 +92,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
           ),
         ],
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -168,11 +170,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
+              },
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                );
+              },
             ),
           ],
         ),

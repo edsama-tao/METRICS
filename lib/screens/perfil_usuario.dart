@@ -71,11 +71,17 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const CustomDrawer(), // ✅ Drawer a la izquierda
       backgroundColor: const Color(0xFFEDEDED),
-      endDrawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
+        leading: Builder( // ✅ Icono del menú a la izquierda
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Center(
           child: Transform.scale(
             scale: 1.4,
@@ -86,14 +92,6 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
             ),
           ),
         ),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
-          ),
-        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

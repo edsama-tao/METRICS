@@ -64,8 +64,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Future<void> cargarContrato() async {
-    final url =
-        Uri.parse("http://10.100.0.9/flutter_api/get_contrato_usuario.php");
+    final url = Uri.parse("http://10.100.0.9/flutter_api/get_contrato_usuario.php");
 
     try {
       final response = await http.post(url, body: {'id_user': widget.userId.toString()});
@@ -317,15 +316,14 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   @override
   Widget build(BuildContext context) {
     final String fechaStr = DateFormat('dd/MM/yyyy').format(widget.fechaSeleccionada);
-    final String mesActual =
-        DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
+    final String mesActual = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
 
     return Scaffold(
       backgroundColor: Colors.white,
-      endDrawer: const CustomDrawer(),
+      drawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         title: Center(
           child: Transform.scale(
             scale: 1.4,
@@ -336,14 +334,6 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
             ),
           ),
         ),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
-          ),
-        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

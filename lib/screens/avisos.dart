@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'global.dart';
 import 'custom_drawer.dart';
 import 'home.dart';
+import 'tareas.dart';
 
 class AvisosScreen extends StatefulWidget {
   const AvisosScreen({super.key});
@@ -93,25 +94,23 @@ class _AvisosScreenState extends State<AvisosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const CustomDrawer(), // ✅ CAMBIADO A drawer
       backgroundColor: const Color(0xFFEDEDED),
-      endDrawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
+        leading: Builder( // ✅ ICONO A LA IZQUIERDA
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Center(
           child: Transform.scale(
             scale: 1.4,
             child: Image.asset('assets/imagelogo.png', height: 40),
           ),
         ),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
-          ),
-        ],
       ),
       body: Center(
         child: ConstrainedBox(
@@ -153,12 +152,25 @@ class _AvisosScreenState extends State<AvisosScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar( // ✅ BARRA INFERIOR ESTILO HOME.DART
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Icon(Icons.calendar_month, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ActividadDiariaScreen(
+                      userId: globalUserId,
+                      fechaSeleccionada: DateTime.now(),
+                    ),
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white),
               onPressed: () {

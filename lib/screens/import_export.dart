@@ -13,11 +13,17 @@ class ImportExportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: const CustomDrawer(),
+      drawer: const CustomDrawer(), // ✅ Drawer a la izquierda
       backgroundColor: const Color(0xFFEDEDED),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
+        leading: Builder( // ✅ Icono de menú a la izquierda
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Center(
           child: Transform.scale(
             scale: 1.4,
@@ -28,15 +34,6 @@ class ImportExportScreen extends StatelessWidget {
             ),
           ),
         ),
-        actions: [
-          Builder(
-            builder:
-                (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                ),
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -65,11 +62,10 @@ class ImportExportScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (_) => ActividadDiariaScreen(
-                          userId: globalUserId,
-                          fechaSeleccionada: DateTime.now(),
-                        ),
+                    builder: (_) => ActividadDiariaScreen(
+                      userId: globalUserId,
+                      fechaSeleccionada: DateTime.now(),
+                    ),
                   ),
                 );
               },

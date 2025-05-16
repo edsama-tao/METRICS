@@ -147,25 +147,23 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: const CustomDrawer(),
+      drawer: const CustomDrawer(), // 👈 CAMBIADO a drawer
       backgroundColor: const Color(0xFFEDEDED),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
+        leading: Builder( // 👈 Ícono del menú a la izquierda
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Center(
           child: Transform.scale(
             scale: 1.4,
             child: Image.asset('assets/imagelogo.png', height: 40),
           ),
         ),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
-          ),
-        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -268,7 +266,7 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
                 ),
               ),
             ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar( // ✅ Añadido igual que en HomeScreen
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

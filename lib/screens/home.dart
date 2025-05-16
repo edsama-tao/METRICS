@@ -67,29 +67,30 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: const CustomDrawer(),
+      drawer: const CustomDrawer(),
       backgroundColor: const Color(0xFFF2F2F2),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Center(
-          child: Transform.scale(
-            scale: 1.4,
-            child: Image.asset(
-              'assets/imagelogo.png',
-              height: 40,
-              fit: BoxFit.contain,
+          child: Transform.translate(
+            offset: const Offset(-30, 0), // 🔽 desplazamiento a la izquierda
+            child: Transform.scale(
+              scale: 1.4,
+              child: Image.asset(
+                'assets/imagelogo.png',
+                height: 60,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -98,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 800),
               child: Container(
-                height: 450, // 👈 altura fija más pequeña
+                height: 450,
                 margin: const EdgeInsets.all(20),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -148,12 +149,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.redAccent,
                       shape: BoxShape.circle,
                     ),
-                    selectedDecoration:
-                        BoxDecoration(color: Colors.transparent),
+                    selectedDecoration: BoxDecoration(color: Colors.transparent),
                   ),
                   calendarBuilders: CalendarBuilders(
                     defaultBuilder: (context, day, _) {
-                      final isWeekend = day.weekday == DateTime.saturday || day.weekday == DateTime.sunday;
+                      final isWeekend =
+                          day.weekday == DateTime.saturday || day.weekday == DateTime.sunday;
                       final isPastOrToday = !day.isAfter(DateTime.now());
                       final isToday = _isSameDay(day, DateTime.now());
                       final key = DateTime(day.year, day.month, day.day);

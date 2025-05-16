@@ -27,7 +27,6 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
   Uint8List? fileBytes; // para web
   io.File? mobileFile; // para móvil
 
-  // Elegir archivo
   Future<void> pickExcelFile() async {
     if (kIsWeb) {
       final uploadInput = html.FileUploadInputElement()..accept = '.xls,.xlsx';
@@ -60,7 +59,6 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
     }
   }
 
-  // Subir archivo
   Future<void> uploadExcelFile() async {
     if ((kIsWeb && fileBytes == null) || (!kIsWeb && mobileFile == null)) {
       _showSnack('Primero selecciona un archivo Excel');
@@ -68,9 +66,7 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
     }
 
     try {
-      final uri = Uri.parse(
-        'http://10.100.0.9/importador_excel/import_excel.php',
-      );
+      final uri = Uri.parse('http://10.100.0.9/importador_excel/import_excel.php');
       final request = http.MultipartRequest('POST', uri);
 
       if (kIsWeb) {
@@ -105,19 +101,23 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
   }
 
   void _showSnack(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: const CustomDrawer(),
+      drawer: const CustomDrawer(), // ✅ Barra lateral a la izquierda
       backgroundColor: const Color(0xFFEDEDED),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
+        leading: Builder( // ✅ Icono de menú a la izquierda
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Center(
           child: Transform.scale(
             scale: 1.4,
@@ -128,15 +128,6 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
             ),
           ),
         ),
-        actions: [
-          Builder(
-            builder:
-                (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                ),
-          ),
-        ],
       ),
       body: Center(
         child: Container(
@@ -202,11 +193,10 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (_) => ActividadDiariaScreen(
-                          userId: globalUserId,
-                          fechaSeleccionada: DateTime.now(),
-                        ),
+                    builder: (_) => ActividadDiariaScreen(
+                      userId: globalUserId,
+                      fechaSeleccionada: DateTime.now(),
+                    ),
                   ),
                 );
               },

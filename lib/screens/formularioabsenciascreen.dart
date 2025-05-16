@@ -34,25 +34,19 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const CustomDrawer(), // ✅ barra lateral izquierda
       backgroundColor: const Color(0xFFFF3C41),
-      endDrawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
         elevation: 0,
-        title: const SizedBox(),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+        leading: Builder( // ✅ icono del menú a la izquierda
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
-        ],
+        ),
+        title: const SizedBox(),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -138,9 +132,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
                                     content: const Text('L\'absència s\'ha registrat correctament.'),
                                     actions: [
                                       TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
+                                        onPressed: () => Navigator.of(context).pop(),
                                         child: const Text('OK'),
                                       ),
                                     ],
@@ -175,7 +167,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar( // ✅ barra inferior
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -195,10 +187,12 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.mail, color: Colors.white),
-              onPressed: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const AvisosScreen()),
-              ),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                );
+              },
             ),
           ],
         ),

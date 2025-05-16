@@ -14,46 +14,45 @@ class CustomDrawer extends StatelessWidget {
       backgroundColor: const Color(0xFFFF3C41),
       child: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(height: 40),
-            Expanded(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 300),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildDrawerButton("Perfil", Icons.person, () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => PerfilUsuarioScreen()),
-                        );
-                      }, context),
-                      _buildDrawerButton("Importar/Exportar", Icons.import_export, () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ImportExportScreen()),
-                        );
-                      }, context),
-                      if (globalTipoUser == 'admin')
-                        _buildDrawerButton("Registrar Usuario", Icons.person_add, () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => RegisterScreen()),
-                          );
-                        }, context),
-                      _buildDrawerButton("Cerrar Sesión", Icons.logout, () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        );
-                      }, context),
-                    ],
-                  ),
-                ),
+            Column(
+              children: [
+                const SizedBox(height: 100),
+                _buildDrawerButton("Perfil", Icons.person, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => PerfilUsuarioScreen()),
+                  );
+                }, context),
+                _buildDrawerButton("Importar/Exportar", Icons.import_export, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ImportExportScreen()),
+                  );
+                }, context),
+                if (globalTipoUser == 'admin')
+                  _buildDrawerButton("Registrar Usuario", Icons.person_add, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => RegisterScreen()),
+                    );
+                  }, context),
+                _buildDrawerButton("Cerrar Sesión", Icons.logout, () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  );
+                }, context),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Image.asset(
+                'assets/imagelogo.png',
+                height: 110, // 🔼 Aumentado el tamaño del logo
               ),
             ),
-            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -63,7 +62,7 @@ class CustomDrawer extends StatelessWidget {
   Widget _buildDrawerButton(
       String text, IconData icon, VoidCallback onTap, BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border.all(color: Colors.black, width: 1),
@@ -73,10 +72,7 @@ class CustomDrawer extends StatelessWidget {
         leading: Icon(icon, color: Colors.black),
         title: Text(
           text,
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(color: Colors.black),
         ),
         onTap: () {
           Navigator.of(context).pop();
