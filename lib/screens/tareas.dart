@@ -64,25 +64,19 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 
   Future<void> cargarContrato() async {
     final url = Uri.parse("http://10.100.0.9/flutter_api/get_contrato_usuario.php");
-
     try {
       final response = await http.post(url, body: {'id_user': widget.userId.toString()});
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data != null && data is Map<String, dynamic>) {
+        if (data is Map<String, dynamic>) {
           setState(() {
             contratoData = data;
             isLoading = false;
           });
-        } else {
-          setState(() => isLoading = false);
         }
-      } else {
-        setState(() => isLoading = false);
       }
-    } catch (e) {
-      setState(() => isLoading = false);
-    }
+    } catch (_) {}
+    setState(() => isLoading = false);
   }
 
   Future<void> cargarTareasGuardadas() async {
@@ -101,7 +95,6 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
           for (final tarea in datos) {
             final index = int.parse(tarea['id_tarea'].toString()) - 1;
             final minutos = int.parse(tarea['minutos'].toString());
-
             if (index >= 0 && index < horasSeleccionadas.length && minutos <= 240) {
               horasSeleccionadas[index] = minutos;
             }
@@ -109,9 +102,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         }
         setState(() {});
       }
-    } catch (e) {
-      print("\u274c Error al cargar tareas: $e");
-    }
+    } catch (_) {}
   }
 
   Future<void> enviarActividades() async {
@@ -123,7 +114,6 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         final minutos = horasSeleccionadas[i];
         if (minutos != null && minutos > 0) {
           seEnvioAlgo = true;
-
           final response = await http.post(
             url,
             body: {
@@ -133,7 +123,6 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
               'fecha': widget.fechaSeleccionada.toIso8601String().split('T')[0],
             },
           );
-
           final data = json.decode(response.body);
           if (data["status"] != "success") {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -155,93 +144,44 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         const SnackBar(content: Text("Actividades guardadas correctamente")),
       );
 
-      setState(() {
-        for (int i = 0; i < horasSeleccionadas.length; i++) {
-          horasSeleccionadas[i] = null;
-        }
-      });
-
+      setState(() => horasSeleccionadas.fillRange(0, horasSeleccionadas.length, null));
       Navigator.pop(context, true);
-    } catch (e) {
-      print("\u274c Error inesperado en enviarActividades: $e");
+    } catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Error al enviar actividades")),
       );
     }
   }
 
-  Widget buildBoton(String texto, Color color) {
-    final bool desactivado = texto == 'ALMACENAR' && totalHoras > 240;
-
-    return ElevatedButton(
-      onPressed: desactivado
-          ? null
-          : () {
-              if (texto == 'ALMACENAR') {
-                enviarActividades();
-              } else if (texto == 'ABSCENCIA') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const FormularioAbsenciaScreen()),
-                );
-              }
-            },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      ),
-      child: Text(
-        texto,
-        style: TextStyle(
-          color: desactivado ? Colors.black45 : Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
   Widget buildTareaRow(int index) {
-    return SizedBox(
-      height: 55,
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  actividades[index],
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
+            Expanded(flex: 3, child: Text(actividades[index])),
+            const SizedBox(width: 12),
             Expanded(
               flex: 1,
               child: DropdownButtonFormField<int?>(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   filled: true,
+                  fillColor: Colors.grey.shade100,
                 ),
                 hint: const Text("Duración"),
                 value: horasSeleccionadas[index],
                 items: [
                   const DropdownMenuItem<int?>(value: null, child: Text("")),
                   ...List.generate(16, (i) => (i + 1) * 15).map((minutos) {
-                    final horas = minutos ~/ 60;
-                    final mins = minutos % 60;
-                    String texto = horas > 0
-                        ? '${horas}h${mins > 0 ? ' ${mins}min' : ''}'
-                        : '${mins}min';
+                    final h = minutos ~/ 60;
+                    final m = minutos % 60;
+                    final texto = h > 0 ? '${h}h ${m > 0 ? '$m min' : ''}' : '$m min';
                     return DropdownMenuItem(value: minutos, child: Text(texto));
-                  }).toList(),
+                  }),
                 ],
                 onChanged: widget.soloLectura
                     ? null
@@ -249,16 +189,11 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                         int anterior = horasSeleccionadas[index] ?? 0;
                         int nuevo = value ?? 0;
                         int nuevoTotal = totalHoras - anterior + nuevo;
-
                         if (nuevoTotal <= 240) {
-                          setState(() {
-                            horasSeleccionadas[index] = value;
-                          });
+                          setState(() => horasSeleccionadas[index] = value);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No puedes asignar más de 4 horas en total.'),
-                            ),
+                            const SnackBar(content: Text('No puedes asignar más de 4 horas.')),
                           );
                         }
                       },
@@ -270,55 +205,71 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     );
   }
 
-  Widget buildDatosAlumno(String nombre, String empresa, String tutor, String estudios,
-      String centroFormativo, String horasAcuerdo, String modalidad) {
+  Widget buildInfoCard(String title, String content, IconData icon) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.red),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(content),
+      ),
+    );
+  }
+
+  Widget buildDatosAlumno() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'DATOS ALUMNO',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: Text("DATOS DEL ALUMNO", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ),
-        const SizedBox(height: 10),
-        _buildInfoRow('Nombre:', nombre),
-        _buildInfoRow('Empresa:', empresa),
-        _buildInfoRow('Tutor:', tutor),
-        _buildInfoRow('Estudios:', estudios),
-        _buildInfoRow('Centro Formativo:', centroFormativo),
-        _buildInfoRow('Horas Acuerdo:', horasAcuerdo),
-        _buildInfoRow('Modalidad:', modalidad),
+        buildInfoCard("Nombre", contratoData?['nombre'] ?? '', Icons.person),
+        buildInfoCard("Empresa", contratoData?['empresa'] ?? '', Icons.business),
+        buildInfoCard("Tutor", contratoData?['tutor'] ?? '', Icons.school),
+        buildInfoCard("Estudios", contratoData?['estudios'] ?? '', Icons.menu_book),
+        buildInfoCard("Centro Formativo", contratoData?['centroFormativo'] ?? '', Icons.location_city),
+        buildInfoCard("Horas Acuerdo", '${contratoData?['horasAcuerdo'] ?? 0} horas', Icons.access_time),
+        buildInfoCard("Modalidad", contratoData?['modalidad'] ?? '', Icons.style),
       ],
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade400,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
+  Widget buildBoton(String texto, Color color) {
+    final bool desactivado = texto == 'ALMACENAR' && totalHoras > 240;
+    return ElevatedButton(
+      onPressed: desactivado
+          ? null
+          : () {
+              if (texto == 'ALMACENAR') {
+                enviarActividades();
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const FormularioAbsenciaScreen()),
+                );
+              }
+            },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+      ),
+      child: Text(
+        texto,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final String fechaStr = DateFormat('dd/MM/yyyy').format(widget.fechaSeleccionada);
-    final String mesActual = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
+    final fechaStr = DateFormat('dd/MM/yyyy').format(widget.fechaSeleccionada);
+    final mesStr = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       drawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
@@ -329,7 +280,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        centerTitle: true, // ✅ Asegura que el título esté centrado
+        centerTitle: true,
         title: SizedBox(
           height: 85,
           child: Image.asset(
@@ -338,10 +289,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+          IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
         ],
       ),
       body: isLoading
@@ -350,49 +298,51 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
               ? const Center(child: Text("No se encontró el contrato."))
               : Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 800),
+                    constraints: const BoxConstraints(maxWidth: 700),
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(mesActual.toUpperCase(),
-                                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                                const SizedBox(height: 4),
-                                Text('ACTIVIDAD DÍA $fechaStr'),
-                              ],
-                            ),
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+                            ],
                           ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                mesStr.toUpperCase(),
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "ACTIVIDAD DÍA $fechaStr",
+                                style: const TextStyle(fontSize: 16, color: Colors.black54),
+                              ),
+                            ],
+                          ),
+                        ),
+
                           const SizedBox(height: 20),
-                          ...List.generate(actividades.length, (index) => buildTareaRow(index)),
-                          const SizedBox(height: 10),
+                          ...List.generate(actividades.length, buildTareaRow),
+                          const SizedBox(height: 20),
                           if (!widget.soloLectura)
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                buildBoton('ABSCENCIA', Colors.grey.shade400),
-                                buildBoton('ALMACENAR', Colors.grey.shade400),
+                                buildBoton("ABSCENCIA", Colors.red),
+                                buildBoton("ALMACENAR", Colors.green),
                               ],
                             ),
                           const SizedBox(height: 30),
-                          buildDatosAlumno(
-                            contratoData?['nombre'] ?? 'Sin nombre',
-                            contratoData?['empresa'] ?? 'Sin empresa',
-                            contratoData?['tutor'] ?? 'Sin tutor',
-                            contratoData?['estudios'] ?? 'Sin estudios',
-                            contratoData?['centroFormativo'] ?? 'Sin centro',
-                            '${contratoData?['horasAcuerdo'] ?? 0} horas',
-                            contratoData?['modalidad'] ?? 'Desconocida',
-                          ),
+                          buildDatosAlumno(),
                         ],
                       ),
                     ),
@@ -403,30 +353,13 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
-              icon: const Icon(Icons.calendar_month, color: Colors.white),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.mail, color: Colors.white),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
-                );
-              },
-            ),
+            IconButton(icon: const Icon(Icons.calendar_month, color: Colors.white), onPressed: () => Navigator.pop(context)),
+            IconButton(icon: const Icon(Icons.home, color: Colors.white), onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+            }),
+            IconButton(icon: const Icon(Icons.mail, color: Colors.white), onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AvisosScreen()));
+            }),
           ],
         ),
       ),
