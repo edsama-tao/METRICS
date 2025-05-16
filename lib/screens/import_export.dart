@@ -13,8 +13,8 @@ class ImportExportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(), // ✅ Drawer a la izquierda
-      backgroundColor: const Color(0xFFEDEDED),
+      drawer: const CustomDrawer(),
+      backgroundColor: const Color(0xFFF4F4F4),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
@@ -24,7 +24,7 @@ class ImportExportScreen extends StatelessWidget {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        centerTitle: true, // ✅ Asegura que el título esté centrado
+        centerTitle: true,
         title: SizedBox(
           height: 85,
           child: Image.asset(
@@ -39,21 +39,54 @@ class ImportExportScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 60),
-          _buildRoundedButton(
-            context,
-            label: 'IMPORT',
-            destination: ImportExcelScreen(),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 600),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.folder_copy_rounded, size: 80, color: Colors.grey.shade400),
+                const SizedBox(height: 10),
+                const Text(
+                  'SELECCIONA QUE QUIERES HACER',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF555555),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                _buildRoundedButton(
+                  context,
+                  label: 'IMPORTAR DATOS',
+                  icon: Icons.upload_file,
+                  destination: ImportExcelScreen(),
+                ),
+                const SizedBox(height: 24),
+                _buildRoundedButton(
+                  context,
+                  label: 'EXPORTAR DATOS',
+                  icon: Icons.download_rounded,
+                  destination: const ExportDataScreen(),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 30),
-          _buildRoundedButton(
-            context,
-            label: 'EXPORT',
-            destination: const ExportDataScreen(),
-          ),
-        ],
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
@@ -101,34 +134,35 @@ class ImportExportScreen extends StatelessWidget {
   static Widget _buildRoundedButton(
     BuildContext context, {
     required String label,
+    required IconData icon,
     required Widget destination,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: SizedBox(
-        width: double.infinity,
-        height: 70,
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => destination),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFF3C41),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
+    return SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => destination),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFF3C41),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
+          elevation: 4,
+          shadowColor: Colors.black26,
+        ),
+        icon: Icon(icon, size: 24, color: Colors.white),
+        label: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
           ),
         ),
       ),

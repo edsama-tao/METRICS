@@ -72,46 +72,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       drawer: const CustomDrawer(),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFFF3C41),
-          automaticallyImplyLeading: false,
-          leading: Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFF3C41),
+        automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
-          centerTitle: true, // ✅ Asegura que el título esté centrado
-          title: SizedBox(
-            height: 85,
-            child: Image.asset(
-              'assets/imagelogo.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
         ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 500),
+        centerTitle: true,
+        title: SizedBox(
+          height: 85,
+          child: Image.asset(
+            'assets/imagelogo.png',
+            fit: BoxFit.contain,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32),
             child: Form(
               key: _formKey,
               child: Container(
+                constraints: const BoxConstraints(maxWidth: 500),
                 padding: const EdgeInsets.all(24),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEDEDEE),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 20),
                     buildTextFormField(nombreController, Icons.person, 'NOMBRE', false),
@@ -137,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                       child: const Text(
                         'REGISTRAR USUARIO',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                   ],

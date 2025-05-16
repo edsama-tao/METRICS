@@ -3,18 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
-// Navegación y componentes comunes
 import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
 import 'tareas.dart';
 import 'package:metrics/screens/global.dart';
 
-// Web
 import 'dart:typed_data';
 import 'dart:html' as html;
-
-// Móvil
 import 'dart:io' as io;
 
 class ImportExcelScreen extends StatefulWidget {
@@ -24,8 +20,8 @@ class ImportExcelScreen extends StatefulWidget {
 
 class _ImportExcelScreenState extends State<ImportExcelScreen> {
   String? fileName;
-  Uint8List? fileBytes; // para web
-  io.File? mobileFile; // para móvil
+  Uint8List? fileBytes;
+  io.File? mobileFile;
 
   Future<void> pickExcelFile() async {
     if (kIsWeb) {
@@ -107,8 +103,8 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(), // ✅ Barra lateral a la izquierda
-      backgroundColor: const Color(0xFFEDEDED),
+      drawer: const CustomDrawer(),
+      backgroundColor: const Color(0xFFF4F4F4),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
@@ -118,7 +114,7 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        centerTitle: true, // ✅ Asegura que el título esté centrado
+        centerTitle: true,
         title: SizedBox(
           height: 85,
           child: Image.asset(
@@ -134,55 +130,78 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
         ],
       ),
       body: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF3C41),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(200, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+        child: SingleChildScrollView(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 700),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.upload_file, size: 70, color: Colors.grey.shade400),
+                const SizedBox(height: 10),
+                const Text(
+                  'SUBE TU ARCHIVO EXCEL PARA IMPORTARLO',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF555555),
                   ),
                 ),
-                icon: const Icon(Icons.file_present, color: Colors.white),
-                label: Text(
-                  fileName == null
-                      ? 'Seleccionar archivo Excel'
-                      : 'Seleccionado: $fileName',
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onPressed: pickExcelFile,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF3C41),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(200, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 30),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF3C41),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 6,
+                    shadowColor: Colors.black26,
                   ),
+                  icon: const Icon(Icons.file_present, color: Colors.white),
+                  label: Text(
+                    fileName == null
+                        ? 'SELECCIONAR ARCHIVO EXCEL'
+                        : 'Seleccionado: $fileName',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  onPressed: pickExcelFile,
                 ),
-                icon: const Icon(Icons.cloud_upload, color: Colors.white),
-                label: const Text('Subir archivo'),
-                onPressed: uploadExcelFile,
-              ),
-            ],
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF3C41),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 6,
+                    shadowColor: Colors.black26,
+                  ),
+                  icon: const Icon(Icons.cloud_upload, color: Colors.white),
+                  label: const Text(
+                    'SUBIR ARCHIVO',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  onPressed: uploadExcelFile,
+                ),
+              ],
+            ),
           ),
         ),
       ),
