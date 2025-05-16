@@ -18,11 +18,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime _focusedDay = DateTime.now();
   Map<DateTime, bool> completedDays = {};
+  Map<DateTime, bool> diasAusencia = {}; // ✅ NUEVO
 
   @override
   void initState() {
     super.initState();
     cargarDiasCompletados();
+    cargarDiasAusencia(); // ✅ NUEVO
   }
 
   Future<void> cargarDiasCompletados() async {
@@ -34,26 +36,47 @@ class _HomeScreenState extends State<HomeScreen> {
     if (response.statusCode == 200) {
       final List fechas = json.decode(response.body);
 
-      print("🔄 Fechas recibidas del backend:");
-      for (final fecha in fechas) {
-        print("- $fecha");
-      }
-
       setState(() {
         completedDays.clear();
         for (final fecha in fechas) {
           final date = DateTime.parse(fecha);
           final soloFecha = DateTime(date.year, date.month, date.day);
-          print("✅ Marcando como completado: $soloFecha");
           completedDays[soloFecha] = true;
         }
       });
     } else {
-      print(
-        "❌ Error al cargar días completados. Código: ${response.statusCode}",
-      );
+      print("❌ Error al cargar días completados. Código: ${response.statusCode}");
     }
   }
+
+  // ✅ NUEVA FUNCIÓN PARA CARGAR DÍAS CON AUSENCIA
+ Future<void> cargarDiasAusencia() async {
+  final response = await http.post(
+    Uri.parse('http://10.100.0.9/flutter_api/get_dias_ausencia.php'),
+    body: {'id_user': globalUserId.toString()},
+  );
+
+  if (response.statusCode == 200) {
+    final List fechas = json.decode(response.body);
+
+    print("🟥 Fechas de ausencia recibidas:");
+    for (final f in fechas) {
+      print(" - $f");
+    }
+
+    setState(() {
+      diasAusencia.clear();
+      for (final fecha in fechas) {
+        final date = DateTime.parse(fecha);
+        final soloFecha = DateTime(date.year, date.month, date.day);
+        diasAusencia[soloFecha] = true;
+        print("✅ Marcado como ausente: $soloFecha");
+      }
+    });
+  } else {
+    print("❌ Error al cargar días de ausencia.");
+  }
+}
 
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
@@ -79,11 +102,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           Builder(
-            builder:
-                (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                ),
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
           ),
         ],
       ),
@@ -126,17 +148,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (_) => ActividadDiariaScreen(
-                          userId: globalUserId,
-                          fechaSeleccionada: selectedDay,
-                          soloLectura:
-                              !esHoy, // 👈 Solo permite editar si es hoy
-                        ),
+                    builder: (_) => ActividadDiariaScreen(
+                      userId: globalUserId,
+                      fechaSeleccionada: selectedDay,
+                      soloLectura: !esHoy,
+                    ),
                   ),
                 ).then((value) {
                   if (esHoy && value == true) {
-                    cargarDiasCompletados(); // 🔄 Refresca los días tras volver si era hoy
+                    cargarDiasCompletados();
+                    cargarDiasAusencia(); // 🔄 Refrescar días de ausencia también
                   }
                 });
               },
@@ -144,15 +165,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 titleCentered: true,
                 formatButtonVisible: false,
               ),
-
               calendarStyle: const CalendarStyle(
                 todayDecoration: BoxDecoration(
-                  color: Colors.redAccent, // ⬅️ Día actual en rojo como antes
+                  color: Colors.redAccent,
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(color: Colors.transparent),
               ),
-
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (context, day, _) {
                   final isWeekend =
@@ -162,16 +181,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   final isToday = _isSameDay(day, DateTime.now());
                   final dayKey = DateTime(day.year, day.month, day.day);
                   final isCompleted = completedDays[dayKey] ?? false;
+                  final isAusente = diasAusencia[dayKey] ?? false; // ✅
 
-                  // Día actual se marca en rojo por defecto
                   if (isToday) return null;
 
                   Color? bgColor;
 
-                  if (isCompleted) {
-                    bgColor = Colors.green;
+                  if (isAusente) {
+                    bgColor = Colors.red; // 🔴 AUSENCIA
+                  } else if (isCompleted) {
+                    bgColor = Colors.green; // 🟢 DÍA COMPLETADO
                   } else if (!isWeekend && isPastOrToday) {
-                    bgColor = Colors.orange;
+                    bgColor = Colors.orange; // 🟠 LABORABLE SIN TAREAS
                   }
 
                   if (bgColor != null) {
@@ -211,11 +232,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (_) => ActividadDiariaScreen(
-                          userId: globalUserId,
-                          fechaSeleccionada: DateTime.now(),
-                        ),
+                    builder: (_) => ActividadDiariaScreen(
+                      userId: globalUserId,
+                      fechaSeleccionada: DateTime.now(),
+                    ),
                   ),
                 );
               },

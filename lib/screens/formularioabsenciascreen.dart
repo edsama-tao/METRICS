@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
+import 'package:metrics/screens/global.dart'; // Asegúrate de importar tu globalUserId
 
 class FormularioAbsenciaScreen extends StatefulWidget {
   const FormularioAbsenciaScreen({super.key});
@@ -118,6 +119,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
                           url,
                           headers: {'Content-Type': 'application/json'},
                           body: jsonEncode({
+                            'id_user': globalUserId, // ✅ Enviamos el ID del usuario
                             'motiu': _motiu,
                             'comentarios': _comentarios ?? '',
                           }),
