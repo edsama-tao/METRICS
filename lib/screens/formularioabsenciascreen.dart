@@ -35,7 +35,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const CustomDrawer(),
-      backgroundColor: const Color(0xFFFF3C41),
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
@@ -45,13 +45,10 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        centerTitle: true, // ✅ Asegura que el título esté centrado
+        centerTitle: true,
         title: SizedBox(
           height: 85,
-          child: Image.asset(
-            'assets/imagelogo.png',
-            fit: BoxFit.contain,
-          ),
+          child: Image.asset('assets/imagelogo.png', fit: BoxFit.contain),
         ),
         actions: [
           IconButton(
@@ -61,116 +58,127 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
         ],
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 500),
+            constraints: const BoxConstraints(maxWidth: 550),
             child: Container(
               padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Color(0xFFEDEDEE),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
+                ],
               ),
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
+                    const Text(
+                      'REGISTRE D\'ABSÈNCIA',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                    ),
+                    const SizedBox(height: 30),
                     DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        labelText: 'Tipus d\'Absència *',
+                      decoration: InputDecoration(
+                        labelText: 'TIPUS D\'ABSÈNCIA *',
+                        prefixIcon: const Icon(Icons.list),
                         filled: true,
-                        fillColor: Colors.white70,
+                        fillColor: Colors.grey[100],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                       value: _motiu,
                       items: motivos.map((motiu) {
                         return DropdownMenuItem<String>(
                           value: motiu,
-                          child: Text(motiu),
+                          child: Text(motiu, overflow: TextOverflow.ellipsis),
                         );
                       }).toList(),
                       onChanged: (value) => setState(() => _motiu = value),
                       validator: (value) =>
                           value == null || value.isEmpty ? 'Selecciona un motiu' : null,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Comentaris (opcional)',
+                      decoration: InputDecoration(
+                        labelText: 'COMENTARIS (OPCIONAL)',
+                        prefixIcon: const Icon(Icons.comment),
                         filled: true,
-                        fillColor: Colors.white70,
+                        fillColor: Colors.grey[100],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                       maxLines: 3,
                       onChanged: (value) => _comentarios = value,
                     ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD83535),
-                        minimumSize: const Size.fromHeight(50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.check),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD83535),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
-                      ),
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          try {
-                            final url = Uri.parse('http://10.100.0.9/flutter_api/registrar_absencia.php');
-                            final response = await http.post(
-                              url,
-                              headers: {'Content-Type': 'application/json'},
-                              body: jsonEncode({
-                                'id_user': globalUserId,
-                                'motiu': _motiu,
-                                'comentarios': _comentarios ?? '',
-                              }),
-                            );
-
-                            final result = jsonDecode(response.body);
-                            if (result['status'] == 'success') {
-                              await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text('Confirmació'),
-                                    content: const Text('L\'absència s\'ha registrat correctament.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(),
-                                        child: const Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              final url = Uri.parse('http://10.100.0.9/flutter_api/registrar_absencia.php');
+                              final response = await http.post(
+                                url,
+                                headers: {'Content-Type': 'application/json'},
+                                body: jsonEncode({
+                                  'id_user': globalUserId,
+                                  'motiu': _motiu,
+                                  'comentarios': _comentarios ?? '',
+                                }),
                               );
 
-                              if (mounted) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                              final result = jsonDecode(response.body);
+                              if (result['status'] == 'success') {
+                                await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Confirmació'),
+                                      content: const Text('L\'absència s\'ha registrat correctament.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(),
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+
+                                if (mounted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                                  );
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error: ${result['message']}')),
                                 );
                               }
-                            } else {
+                            } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error: ${result['message']}')),
+                                SnackBar(content: Text('Error de connexió: $e')),
                               );
                             }
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error de connexió: $e')),
-                            );
                           }
-                        }
-                      },
-                      child: const Text('GUARDAR', style: TextStyle(fontSize: 18)),
+                        },
+                        label: const Text('GUARDAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      ),
                     ),
                   ],
                 ),
@@ -184,28 +192,13 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
-              icon: const Icon(Icons.calendar_month, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.mail, color: Colors.white),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
-                );
-              },
-            ),
+            IconButton(icon: const Icon(Icons.calendar_month, color: Colors.white), onPressed: () => Navigator.pop(context)),
+            IconButton(icon: const Icon(Icons.home, color: Colors.white), onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+            }),
+            IconButton(icon: const Icon(Icons.mail, color: Colors.white), onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AvisosScreen()));
+            }),
           ],
         ),
       ),
