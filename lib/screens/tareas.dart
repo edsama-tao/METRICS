@@ -154,69 +154,87 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Widget buildTareaRow(int index) {
-    return Card(
-      elevation: 2,
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Expanded(flex: 3, child: Text(actividades[index])),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 1,
-              child: DropdownButtonFormField<int?>(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  filled: true,
-                  fillColor: Colors.grey.shade100,
-                ),
-                hint: const Text("Duración"),
-                value: horasSeleccionadas[index],
-                items: [
-                  const DropdownMenuItem<int?>(value: null, child: Text("")),
-                  ...List.generate(16, (i) => (i + 1) * 15).map((minutos) {
-                    final h = minutos ~/ 60;
-                    final m = minutos % 60;
-                    final texto = h > 0 ? '${h}h ${m > 0 ? '$m min' : ''}' : '$m min';
-                    return DropdownMenuItem(value: minutos, child: Text(texto));
-                  }),
-                ],
-                onChanged: widget.soloLectura
-                    ? null
-                    : (value) {
-                        int anterior = horasSeleccionadas[index] ?? 0;
-                        int nuevo = value ?? 0;
-                        int nuevoTotal = totalHoras - anterior + nuevo;
-                        if (nuevoTotal <= 240) {
-                          setState(() => horasSeleccionadas[index] = value);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('No puedes asignar más de 4 horas.')),
-                          );
-                        }
-                      },
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+      ),
+      child: Row(
+        children: [
+          Expanded(flex: 3, child: Text(actividades[index])),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 1,
+            child: DropdownButtonFormField<int?>(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                filled: true,
+                fillColor: Colors.grey.shade100,
               ),
+              hint: const Text("Duración"),
+              value: horasSeleccionadas[index],
+              items: [
+                const DropdownMenuItem<int?>(value: null, child: Text("")),
+                ...List.generate(16, (i) => (i + 1) * 15).map((minutos) {
+                  final h = minutos ~/ 60;
+                  final m = minutos % 60;
+                  final texto = h > 0 ? '${h}h ${m > 0 ? '$m min' : ''}' : '$m min';
+                  return DropdownMenuItem(value: minutos, child: Text(texto));
+                }),
+              ],
+              onChanged: widget.soloLectura
+                  ? null
+                  : (value) {
+                      int anterior = horasSeleccionadas[index] ?? 0;
+                      int nuevo = value ?? 0;
+                      int nuevoTotal = totalHoras - anterior + nuevo;
+                      if (nuevoTotal <= 240) {
+                        setState(() => horasSeleccionadas[index] = value);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('No puedes asignar más de 4 horas.')),
+                        );
+                      }
+                    },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget buildInfoCard(String title, String content, IconData icon) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: ListTile(
-        leading: Icon(icon, color: Colors.red),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(content),
-      ),
-    );
-  }
+ Widget buildInfoCard(String title, String content, IconData icon) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: const [
+        BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+      ],
+    ),
+    child: Row(
+      children: [
+        Icon(icon, color: Colors.red),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(content),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget buildDatosAlumno() {
     return Column(
@@ -269,7 +287,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
     final mesStr = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFF4F4F4),
       drawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
@@ -304,32 +322,31 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
                       child: Column(
                         children: [
                           Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          margin: const EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: const [
-                              BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-                            ],
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            margin: const EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: const [
+                                BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  mesStr.toUpperCase(),
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "ACTIVIDAD DÍA $fechaStr",
+                                  style: const TextStyle(fontSize: 16, color: Colors.black54),
+                                ),
+                              ],
+                            ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                mesStr.toUpperCase(),
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "ACTIVIDAD DÍA $fechaStr",
-                                style: const TextStyle(fontSize: 16, color: Colors.black54),
-                              ),
-                            ],
-                          ),
-                        ),
-
                           const SizedBox(height: 20),
                           ...List.generate(actividades.length, buildTareaRow),
                           const SizedBox(height: 20),

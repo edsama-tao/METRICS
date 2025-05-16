@@ -35,7 +35,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const CustomDrawer(),
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
@@ -85,7 +85,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
                         labelText: 'TIPUS D\'ABSÈNCIA *',
                         prefixIcon: const Icon(Icons.list),
                         filled: true,
-                        fillColor: Colors.grey[100],
+                        fillColor: const Color.fromARGB(255, 255, 255, 255),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -107,7 +107,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
                         labelText: 'COMENTARIS (OPCIONAL)',
                         prefixIcon: const Icon(Icons.comment),
                         filled: true,
-                        fillColor: Colors.grey[100],
+                        fillColor: const Color.fromARGB(255, 255, 255, 255),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -177,7 +177,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
                             }
                           }
                         },
-                        label: const Text('GUARDAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        label: const Text('GUARDAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color:Colors.white)),
                       ),
                     ),
                   ],
