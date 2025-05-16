@@ -70,34 +70,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFF3C41),
-      drawer: const CustomDrawer(), // ✅ drawer en vez de endDrawer
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFF3C41),
-        automaticallyImplyLeading: false,
-        leading: Builder( // ✅ Icono de menú a la izquierda
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      drawer: const CustomDrawer(),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFFF3C41),
+          automaticallyImplyLeading: false,
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
           ),
-        ),
-        title: Center(
-          child: Transform.scale(
-            scale: 1.4,
+          centerTitle: true, // ✅ Asegura que el título esté centrado
+          title: SizedBox(
+            height: 85,
             child: Image.asset(
               'assets/imagelogo.png',
-              height: 40,
               fit: BoxFit.contain,
             ),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         child: Center(
           child: ConstrainedBox(

@@ -94,23 +94,31 @@ class _AvisosScreenState extends State<AvisosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(), // ✅ CAMBIADO A drawer
+      drawer: const CustomDrawer(),
       backgroundColor: const Color(0xFFEDEDED),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
-        leading: Builder( // ✅ ICONO A LA IZQUIERDA
+        leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        title: Center(
-          child: Transform.scale(
-            scale: 1.4,
-            child: Image.asset('assets/imagelogo.png', height: 40),
+        centerTitle: true, // ✅ Asegura que el título esté centrado
+        title: SizedBox(
+          height: 85,
+          child: Image.asset(
+            'assets/imagelogo.png',
+            fit: BoxFit.contain,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
       body: Center(
         child: ConstrainedBox(
@@ -152,7 +160,7 @@ class _AvisosScreenState extends State<AvisosScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar( // ✅ BARRA INFERIOR ESTILO HOME.DART
+      bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

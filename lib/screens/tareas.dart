@@ -54,8 +54,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   Map<String, dynamic>? contratoData;
   bool isLoading = true;
 
-  int get totalHoras =>
-      horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
+  int get totalHoras => horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
 
   @override
   void initState() {
@@ -111,7 +110,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         setState(() {});
       }
     } catch (e) {
-      print("❌ Error al cargar tareas: $e");
+      print("\u274c Error al cargar tareas: $e");
     }
   }
 
@@ -164,7 +163,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 
       Navigator.pop(context, true);
     } catch (e) {
-      print("❌ Error inesperado en enviarActividades: $e");
+      print("\u274c Error inesperado en enviarActividades: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Error al enviar actividades")),
       );
@@ -323,17 +322,27 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
       drawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
-        automaticallyImplyLeading: true,
-        title: Center(
-          child: Transform.scale(
-            scale: 1.4,
-            child: Image.asset(
-              'assets/imagelogo.png',
-              height: 40,
-              fit: BoxFit.contain,
-            ),
+        automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
+        centerTitle: true, // ✅ Asegura que el título esté centrado
+        title: SizedBox(
+          height: 85,
+          child: Image.asset(
+            'assets/imagelogo.png',
+            fit: BoxFit.contain,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

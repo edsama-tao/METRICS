@@ -34,19 +34,31 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(), // ✅ barra lateral izquierda
+      drawer: const CustomDrawer(),
       backgroundColor: const Color(0xFFFF3C41),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
-        elevation: 0,
-        leading: Builder( // ✅ icono del menú a la izquierda
+        leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        title: const SizedBox(),
+        centerTitle: true, // ✅ Asegura que el título esté centrado
+        title: SizedBox(
+          height: 85,
+          child: Image.asset(
+            'assets/imagelogo.png',
+            fit: BoxFit.contain,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -167,7 +179,7 @@ class _FormularioAbsenciaScreenState extends State<FormularioAbsenciaScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar( // ✅ barra inferior
+      bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

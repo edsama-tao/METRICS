@@ -71,27 +71,31 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(), // ✅ Drawer a la izquierda
+      drawer: const CustomDrawer(),
       backgroundColor: const Color(0xFFEDEDED),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
-        leading: Builder( // ✅ Icono del menú a la izquierda
+        leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        title: Center(
-          child: Transform.scale(
-            scale: 1.4,
-            child: Image.asset(
-              'assets/imagelogo.png',
-              height: 40,
-              fit: BoxFit.contain,
-            ),
+        centerTitle: true, // ✅ Asegura que el título esté centrado
+        title: SizedBox(
+          height: 85,
+          child: Image.asset(
+            'assets/imagelogo.png',
+            fit: BoxFit.contain,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

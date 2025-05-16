@@ -112,22 +112,26 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
-        leading: Builder( // ✅ Icono de menú a la izquierda
+        leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        title: Center(
-          child: Transform.scale(
-            scale: 1.4,
-            child: Image.asset(
-              'assets/imagelogo.png',
-              height: 40,
-              fit: BoxFit.contain,
-            ),
+        centerTitle: true, // ✅ Asegura que el título esté centrado
+        title: SizedBox(
+          height: 85,
+          child: Image.asset(
+            'assets/imagelogo.png',
+            fit: BoxFit.contain,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
       body: Center(
         child: Container(
