@@ -28,6 +28,7 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
     'Fecha Nacimiento': false,
     'Número SS': false,
     'Teléfono': false,
+    'Contrato': false,
   };
   bool _selectAllFields = false;
   List<Map<String, dynamic>> usuarios = [];
