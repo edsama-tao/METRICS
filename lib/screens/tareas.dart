@@ -54,7 +54,8 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   Map<String, dynamic>? contratoData;
   bool isLoading = true;
 
-  int get totalHoras => horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
+  int get totalHoras =>
+      horasSeleccionadas.whereType<int>().fold(0, (a, b) => a + b);
 
   @override
   void initState() {
@@ -63,9 +64,14 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Future<void> cargarContrato() async {
-    final url = Uri.parse("http://10.100.0.9/flutter_api/get_contrato_usuario.php");
+    final url = Uri.parse(
+      "http://10.100.0.9/flutter_api/get_contrato_usuario.php",
+    );
     try {
-      final response = await http.post(url, body: {'id_user': widget.userId.toString()});
+      final response = await http.post(
+        url,
+        body: {'id_user': widget.userId.toString()},
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {
@@ -95,7 +101,9 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
           for (final tarea in datos) {
             final index = int.parse(tarea['id_tarea'].toString()) - 1;
             final minutos = int.parse(tarea['minutos'].toString());
-            if (index >= 0 && index < horasSeleccionadas.length && minutos <= 240) {
+            if (index >= 0 &&
+                index < horasSeleccionadas.length &&
+                minutos <= 240) {
               horasSeleccionadas[index] = minutos;
             }
           }
@@ -135,7 +143,9 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 
       if (!seEnvioAlgo) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("No has asignado duración a ninguna actividad.")),
+          const SnackBar(
+            content: Text("No has asignado duración a ninguna actividad."),
+          ),
         );
         return;
       }
@@ -144,7 +154,9 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         const SnackBar(content: Text("Actividades guardadas correctamente")),
       );
 
-      setState(() => horasSeleccionadas.fillRange(0, horasSeleccionadas.length, null));
+      setState(
+        () => horasSeleccionadas.fillRange(0, horasSeleccionadas.length, null),
+      );
       Navigator.pop(context, true);
     } catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -154,80 +166,64 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Widget buildTareaRow(int index) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
-      ),
-      child: Row(
-        children: [
-          Expanded(flex: 3, child: Text(actividades[index])),
-          const SizedBox(width: 12),
-          Expanded(
-            flex: 1,
-            child: DropdownButtonFormField<int?>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                filled: true,
-                fillColor: Colors.grey.shade100,
-              ),
-              hint: const Text("Duración"),
-              value: horasSeleccionadas[index],
-              items: [
-                const DropdownMenuItem<int?>(value: null, child: Text("")),
-                ...List.generate(16, (i) => (i + 1) * 15).map((minutos) {
-                  final h = minutos ~/ 60;
-                  final m = minutos % 60;
-                  final texto = h > 0 ? '${h}h ${m > 0 ? '$m min' : ''}' : '$m min';
-                  return DropdownMenuItem(value: minutos, child: Text(texto));
-                }),
-              ],
-              onChanged: widget.soloLectura
-                  ? null
-                  : (value) {
-                      int anterior = horasSeleccionadas[index] ?? 0;
-                      int nuevo = value ?? 0;
-                      int nuevoTotal = totalHoras - anterior + nuevo;
-                      if (nuevoTotal <= 240) {
-                        setState(() => horasSeleccionadas[index] = value);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No puedes asignar más de 4 horas.')),
-                        );
-                      }
-                    },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
- Widget buildInfoCard(String title, String content, IconData icon) {
   return Container(
-    margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+    margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(12),
-      boxShadow: const [
-        BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-      ],
+      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
     ),
     child: Row(
       children: [
-        Icon(icon, color: Colors.red),
+        Flexible(
+          flex: 3,
+          child: Text(
+            actividades[index],
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 3,
+            style: const TextStyle(fontSize: 14),
+          ),
+        ),
         const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(content),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 140),
+          child: DropdownButtonFormField<int?>(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              filled: true,
+              fillColor: Colors.grey.shade100,
+            ),
+            hint: const Text("Duración"),
+            value: horasSeleccionadas[index],
+            items: [
+              const DropdownMenuItem<int?>(value: null, child: Text("")),
+              ...List.generate(16, (i) => (i + 1) * 15).map((minutos) {
+                final h = minutos ~/ 60;
+                final m = minutos % 60;
+                final texto = h > 0 ? '${h}h ${m > 0 ? '$m min' : ''}' : '$m min';
+                return DropdownMenuItem(value: minutos, child: Text(texto));
+              }),
             ],
+            onChanged: widget.soloLectura
+                ? null
+                : (value) {
+                    int anterior = horasSeleccionadas[index] ?? 0;
+                    int nuevo = value ?? 0;
+                    int nuevoTotal = totalHoras - anterior + nuevo;
+                    if (nuevoTotal <= 240) {
+                      setState(() => horasSeleccionadas[index] = value);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No puedes asignar más de 4 horas.'),
+                        ),
+                      );
+                    }
+                  },
           ),
         ),
       ],
@@ -236,20 +232,75 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 }
 
 
+  Widget buildInfoCard(String title, String content, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.red),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(content),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildDatosAlumno() {
     return Column(
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 12),
-          child: Text("DATOS DEL ALUMNO", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          child: Text(
+            "DATOS DEL ALUMNO",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
         ),
         buildInfoCard("Nombre", contratoData?['nombre'] ?? '', Icons.person),
-        buildInfoCard("Empresa", contratoData?['empresa'] ?? '', Icons.business),
+        buildInfoCard(
+          "Empresa",
+          contratoData?['empresa'] ?? '',
+          Icons.business,
+        ),
         buildInfoCard("Tutor", contratoData?['tutor'] ?? '', Icons.school),
-        buildInfoCard("Estudios", contratoData?['estudios'] ?? '', Icons.menu_book),
-        buildInfoCard("Centro Formativo", contratoData?['centroFormativo'] ?? '', Icons.location_city),
-        buildInfoCard("Horas Acuerdo", '${contratoData?['horasAcuerdo'] ?? 0} horas', Icons.access_time),
-        buildInfoCard("Modalidad", contratoData?['modalidad'] ?? '', Icons.style),
+        buildInfoCard(
+          "Estudios",
+          contratoData?['estudios'] ?? '',
+          Icons.menu_book,
+        ),
+        buildInfoCard(
+          "Centro Formativo",
+          contratoData?['centroFormativo'] ?? '',
+          Icons.location_city,
+        ),
+        buildInfoCard(
+          "Horas Acuerdo",
+          '${contratoData?['horasAcuerdo'] ?? 0} horas',
+          Icons.access_time,
+        ),
+        buildInfoCard(
+          "Modalidad",
+          contratoData?['modalidad'] ?? '',
+          Icons.style,
+        ),
       ],
     );
   }
@@ -257,18 +308,21 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   Widget buildBoton(String texto, Color color) {
     final bool desactivado = texto == 'ALMACENAR' && totalHoras > 240;
     return ElevatedButton(
-      onPressed: desactivado
-          ? null
-          : () {
-              if (texto == 'ALMACENAR') {
-                enviarActividades();
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const FormularioAbsenciaScreen()),
-                );
-              }
-            },
+      onPressed:
+          desactivado
+              ? null
+              : () {
+                if (texto == 'ALMACENAR') {
+                  enviarActividades();
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FormularioAbsenciaScreen(),
+                    ),
+                  );
+                }
+              },
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -276,7 +330,10 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
       ),
       child: Text(
         texto,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -284,7 +341,10 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   @override
   Widget build(BuildContext context) {
     final fechaStr = DateFormat('dd/MM/yyyy').format(widget.fechaSeleccionada);
-    final mesStr = DateFormat('MMMM dd/MM/yyyy', 'es_ES').format(widget.fechaSeleccionada);
+    final mesStr = DateFormat(
+      'MMMM dd/MM/yyyy',
+      'es_ES',
+    ).format(widget.fechaSeleccionada);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
@@ -293,90 +353,121 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+          builder:
+              (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
         centerTitle: true,
         title: SizedBox(
           height: 85,
-          child: Image.asset(
-            'assets/imagelogo.png',
-            fit: BoxFit.contain,
-          ),
+          child: Image.asset('assets/imagelogo.png', fit: BoxFit.contain),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : contratoData == null
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : contratoData == null
               ? const Center(child: Text("No se encontró el contrato."))
               : Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 700),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            margin: const EdgeInsets.only(bottom: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: const [
-                                BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  mesStr.toUpperCase(),
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "ACTIVIDAD DÍA $fechaStr",
-                                  style: const TextStyle(fontSize: 16, color: Colors.black54),
-                                ),
-                              ],
-                            ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 700),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 20,
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 6,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 20),
-                          ...List.generate(actividades.length, buildTareaRow),
-                          const SizedBox(height: 20),
-                          if (!widget.soloLectura)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                buildBoton("ABSCENCIA", Colors.red),
-                                buildBoton("ALMACENAR", Colors.green),
-                              ],
-                            ),
-                          const SizedBox(height: 30),
-                          buildDatosAlumno(),
-                        ],
-                      ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                mesStr.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "ACTIVIDAD DÍA $fechaStr",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ...List.generate(actividades.length, buildTareaRow),
+                        const SizedBox(height: 20),
+                        if (!widget.soloLectura)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              buildBoton("ABSCENCIA", Colors.red),
+                              buildBoton("ALMACENAR", Colors.green),
+                            ],
+                          ),
+                        const SizedBox(height: 30),
+                        buildDatosAlumno(),
+                      ],
                     ),
                   ),
                 ),
+              ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(icon: const Icon(Icons.calendar_month, color: Colors.white), onPressed: () => Navigator.pop(context)),
-            IconButton(icon: const Icon(Icons.home, color: Colors.white), onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
-            }),
-            IconButton(icon: const Icon(Icons.mail, color: Colors.white), onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AvisosScreen()));
-            }),
+            IconButton(
+              icon: const Icon(Icons.calendar_month, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.mail, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AvisosScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),
