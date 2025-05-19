@@ -19,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final nombreController = TextEditingController();
   final apellidosController = TextEditingController();
+  final fechaNacimientoController = TextEditingController(); // Nuevo
   final dniController = TextEditingController();
   final correoController = TextEditingController();
   final telefonoController = TextEditingController();
@@ -35,6 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         body: jsonEncode({
           'nombre': nombreController.text.trim(),
           'apellidos': apellidosController.text.trim(),
+          'fechaNacimiento': fechaNacimientoController.text.trim(),
           'dni': dniController.text.trim(),
           'correo': correoController.text.trim(),
           'telefono': telefonoController.text.trim(),
@@ -68,6 +70,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error de conexión: $e')),
       );
+    }
+  }
+
+  Future<void> _seleccionarFecha() async {
+    final DateTime? fechaSeleccionada = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2005),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      locale: const Locale('es', 'ES'),
+    );
+
+    if (fechaSeleccionada != null) {
+      setState(() {
+        fechaNacimientoController.text =
+            "${fechaSeleccionada.day.toString().padLeft(2, '0')}-${fechaSeleccionada.month.toString().padLeft(2, '0')}-${fechaSeleccionada.year}";
+      });
     }
   }
 
@@ -126,6 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20),
                     buildTextFormField(nombreController, Icons.person, 'NOMBRE', false),
                     buildTextFormField(apellidosController, Icons.person_outline, 'APELLIDOS', false),
+                    buildDatePickerField(fechaNacimientoController, Icons.calendar_today, 'FECHA DE NACIMIENTO'),
                     buildTextFormField(dniController, Icons.badge, 'DNI', false),
                     buildTextFormField(correoController, Icons.email, 'CORREO', false, isGmail: true),
                     buildTextFormField(telefonoController, Icons.phone, 'TELÉFONO', false),
@@ -228,6 +248,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
           fillColor: Colors.white70,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDatePickerField(
+    TextEditingController controller,
+    IconData icon,
+    String hint,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: GestureDetector(
+        onTap: _seleccionarFecha,
+        child: AbsorbPointer(
+          child: TextFormField(
+            controller: controller,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Completa este campo';
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: Colors.grey),
+              hintText: hint,
+              filled: true,
+              fillColor: Colors.white70,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+            ),
+          ),
         ),
       ),
     );
