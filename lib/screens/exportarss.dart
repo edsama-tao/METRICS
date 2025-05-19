@@ -2,17 +2,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import '../utils/exporter.dart';
 import 'custom_drawer.dart';
 import 'home.dart';
 import 'avisos.dart';
 import 'tareas.dart';
 import 'package:metrics/screens/global.dart';
-
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io' as io;
-import 'dart:html' as html;
 
 class ExportDataScreen extends StatefulWidget {
   const ExportDataScreen({super.key});
@@ -36,6 +31,14 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
   bool _loading = true;
   String _busqueda = '';
   bool _selectAllUsers = false;
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -72,74 +75,47 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
     });
   }
 
-  Future<void> exportarUsuariosSeleccionados() async {
-    final selectedFields =
-        _fields.entries.where((e) => e.value).map((e) => e.key).toList();
-    final selectedIds =
-        selectedUsers.entries.where((e) => e.value).map((e) => e.key).toList();
+Future<void> exportarUsuariosSeleccionados() async {
+  final selectedFields =
+      _fields.entries.where((e) => e.value).map((e) => e.key).toList();
+  final selectedIds =
+      selectedUsers.entries.where((e) => e.value).map((e) => e.key).toList();
 
-    if (selectedIds.isEmpty || selectedFields.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('SELECCIONE AL MENOS UN USUARIO Y UN CAMPO'),
-        ),
-      );
-      return;
-    }
-
-    try {
-      final uri = Uri.parse('http://10.100.0.9/flutter_api/exportar_usuarios.php');
-      final response = await http.post(
-        uri,
-        body: {
-          'ids': selectedIds.join(','),
-          'fields': selectedFields.join(','),
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final bytes = response.bodyBytes;
-
-        if (kIsWeb) {
-          final blob = html.Blob([bytes]);
-          final url = html.Url.createObjectUrlFromBlob(blob);
-          final anchor = html.AnchorElement(href: url)
-            ..target = 'blank'
-            ..download = 'usuarios_exportados.xlsx';
-
-          html.document.body!.append(anchor);
-          anchor.click();
-          anchor.remove();
-          html.Url.revokeObjectUrl(url);
-        } else {
-          final status = await Permission.storage.request();
-          if (!status.isGranted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Permiso de almacenamiento denegado')),
-            );
-            return;
-          }
-
-          final directory = await getExternalStorageDirectory();
-          final filePath = '${directory!.path}/usuarios_exportados.xlsx';
-          final file = io.File(filePath);
-          await file.writeAsBytes(bytes);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Archivo guardado en: $filePath')),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al exportar: ${response.statusCode}')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error inesperado: $e')),
-      );
-    }
+  if (selectedIds.isEmpty || selectedFields.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('SELECCIONE AL MENOS UN USUARIO Y UN CAMPO'),
+      ),
+    );
+    return;
   }
+
+  try {
+    final uri = Uri.parse(
+      'http://10.100.0.9/flutter_api/exportar_usuarios.php',
+    );
+    final response = await http.post(
+      uri,
+      body: {
+        'ids': selectedIds.join(','),
+        'fields': selectedFields.join(','),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      await exportarArchivo(bytes, context); // ✅ USO UNIFICADO
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al exportar: ${response.statusCode}')),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Error inesperado: $e')));
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -150,18 +126,16 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+          builder:
+              (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
         centerTitle: true,
         title: SizedBox(
           height: 85,
-          child: Image.asset(
-            'assets/imagelogo.png',
-            fit: BoxFit.contain,
-          ),
+          child: Image.asset('assets/imagelogo.png', fit: BoxFit.contain),
         ),
         actions: [
           IconButton(
@@ -170,174 +144,208 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
           ),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 800),
-                  child: Container(
-                    margin: const EdgeInsets.all(24),
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 25,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.file_download, size: 64, color: Colors.grey.shade400),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'EXPORTAR USUARIOS A EXCEL',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
-                            color: Color(0xFF222222),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Container(
+                      margin: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 25,
+                            offset: const Offset(0, 8),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Selecciona los campos y los usuarios que deseas exportar.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 32),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'CAMPOS A INCLUIR:',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.file_download,
+                            size: 64,
+                            color: Colors.grey.shade400,
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 20,
-                          runSpacing: 8,
-                          children: _fields.entries.map((entry) {
-                            return SizedBox(
-                              width: 300,
-                              child: CheckboxListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(entry.key),
-                                value: entry.value,
-                                onChanged: (val) => _toggleField(entry.key, val),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'EXPORTAR USUARIOS A EXCEL',
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                              color: Color(0xFF222222),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Selecciona los campos y los usuarios que deseas exportar.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                          const SizedBox(height: 32),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: const Text(
+                              'CAMPOS A INCLUIR:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
                               ),
-                            );
-                          }).toList(),
-                        ),
-                        CheckboxListTile(
-                          title: const Text('Seleccionar todos los campos'),
-                          value: _selectAllFields,
-                          onChanged: _toggleSelectAllFields,
-                        ),
-                        const Divider(height: 40, thickness: 1),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'BUSCAR USUARIO:',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Escribe un nombre de usuario',
-                            prefixIcon: const Icon(Icons.search),
-                            fillColor: Colors.grey.shade100,
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide.none,
                             ),
                           ),
-                          onChanged: (value) {
-                            setState(() => _busqueda = value.toLowerCase());
-                          },
-                        ),
-                        const SizedBox(height: 30),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'USUARIOS DISPONIBLE:',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 20,
+                            runSpacing: 8,
+                            children:
+                                _fields.entries.map((entry) {
+                                  return SizedBox(
+                                    width: 300,
+                                    child: CheckboxListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      title: Text(entry.key),
+                                      value: entry.value,
+                                      onChanged:
+                                          (val) => _toggleField(entry.key, val),
+                                    ),
+                                  );
+                                }).toList(),
                           ),
-                        ),
-                        CheckboxListTile(
-                          title: const Text('Seleccionar todos los usuarios'),
-                          value: _selectAllUsers,
-                          onChanged: (val) {
-                            setState(() {
-                              _selectAllUsers = val ?? false;
-                              selectedUsers.updateAll((key, _) => _selectAllUsers);
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.grey.shade300),
+                          CheckboxListTile(
+                            title: const Text('Seleccionar todos los campos'),
+                            value: _selectAllFields,
+                            onChanged: _toggleSelectAllFields,
                           ),
-                          constraints: const BoxConstraints(maxHeight: 300),
-                          child: Scrollbar(
-                            child: ListView(
-                              shrinkWrap: true,
-                              padding: const EdgeInsets.all(8),
-                              children: usuarios
-                                  .where((usuario) => usuario['nombreUsuario']
-                                      .toLowerCase()
-                                      .contains(_busqueda))
-                                  .map((usuario) {
-                                final id = int.parse(usuario['id_user']);
-                                final name = usuario['nombreUsuario'];
-                                return CheckboxListTile(
-                                  title: Text(name),
-                                  value: selectedUsers[id],
-                                  onChanged: (val) {
-                                    setState(() {
-                                      selectedUsers[id] = val ?? false;
-                                    });
-                                  },
+                          const Divider(height: 40, thickness: 1),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: const Text(
+                              'BUSCAR USUARIO:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Escribe un nombre de usuario',
+                              prefixIcon: const Icon(Icons.search),
+                              fillColor: Colors.grey.shade100,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() => _busqueda = value.toLowerCase());
+                            },
+                          ),
+                          const SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: const Text(
+                              'USUARIOS DISPONIBLES:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          CheckboxListTile(
+                            title: const Text('Seleccionar todos los usuarios'),
+                            value: _selectAllUsers,
+                            onChanged: (val) {
+                              setState(() {
+                                _selectAllUsers = val ?? false;
+                                selectedUsers.updateAll(
+                                  (key, _) => _selectAllUsers,
                                 );
-                              }).toList(),
-                            ),
+                              });
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 40),
-                        ElevatedButton.icon(
-                          onPressed: exportarUsuariosSeleccionados,
-                          icon: const Icon(Icons.download_rounded),
-                          label: const Text(
-                            'EXPORTAR',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFD83535),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                            shape: RoundedRectangleBorder(
+                          const SizedBox(height: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
                               borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
                             ),
-                            elevation: 8,
-                            shadowColor: Colors.black38,
+                            constraints: const BoxConstraints(maxHeight: 300),
+                            child: Scrollbar(
+                              controller: _scrollController,
+                              thumbVisibility: true,
+                              child: ListView(
+                                controller: _scrollController,
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.all(8),
+                                children:
+                                    usuarios
+                                        .where(
+                                          (usuario) => usuario['nombreUsuario']
+                                              .toLowerCase()
+                                              .contains(_busqueda),
+                                        )
+                                        .map((usuario) {
+                                          final id = int.parse(
+                                            usuario['id_user'],
+                                          );
+                                          final name = usuario['nombreUsuario'];
+                                          return CheckboxListTile(
+                                            title: Text(name),
+                                            value: selectedUsers[id],
+                                            onChanged: (val) {
+                                              setState(() {
+                                                selectedUsers[id] =
+                                                    val ?? false;
+                                              });
+                                            },
+                                          );
+                                        })
+                                        .toList(),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 40),
+                          ElevatedButton.icon(
+                            onPressed: exportarUsuariosSeleccionados,
+                            icon: const Icon(Icons.download_rounded),
+                            label: const Text(
+                              'EXPORTAR',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD83535),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 40,
+                                vertical: 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 8,
+                              shadowColor: Colors.black38,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFFFF3C41),
         child: Row(
@@ -349,10 +357,11 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ActividadDiariaScreen(
-                      userId: globalUserId,
-                      fechaSeleccionada: DateTime.now(),
-                    ),
+                    builder:
+                        (_) => ActividadDiariaScreen(
+                          userId: globalUserId,
+                          fechaSeleccionada: DateTime.now(),
+                        ),
                   ),
                 );
               },

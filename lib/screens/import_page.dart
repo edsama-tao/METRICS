@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
+import 'dart:typed_data';
 
 import 'custom_drawer.dart';
 import 'home.dart';
@@ -9,9 +10,9 @@ import 'avisos.dart';
 import 'tareas.dart';
 import 'package:metrics/screens/global.dart';
 
-import 'dart:typed_data';
-import 'dart:html' as html;
-import 'dart:io' as io;
+import '../utils/importer.dart'; // Importación condicional
+
+import 'dart:io';
 
 class ImportExcelScreen extends StatefulWidget {
   @override
@@ -21,25 +22,15 @@ class ImportExcelScreen extends StatefulWidget {
 class _ImportExcelScreenState extends State<ImportExcelScreen> {
   String? fileName;
   Uint8List? fileBytes;
-  io.File? mobileFile;
+  File? mobileFile;
 
   Future<void> pickExcelFile() async {
     if (kIsWeb) {
-      final uploadInput = html.FileUploadInputElement()..accept = '.xls,.xlsx';
-      uploadInput.click();
-      uploadInput.onChange.listen((e) {
-        final files = uploadInput.files;
-        if (files != null && files.isNotEmpty) {
-          final file = files.first;
-          final reader = html.FileReader();
-          reader.readAsArrayBuffer(file);
-          reader.onLoadEnd.listen((e) {
-            setState(() {
-              fileName = file.name;
-              fileBytes = reader.result as Uint8List;
-            });
-          });
-        }
+      await seleccionarArchivoExcelWeb((bytes) {
+        setState(() {
+          fileBytes = bytes as Uint8List?;
+          fileName = 'archivo_subido.xlsx';
+        });
       });
     } else {
       final result = await FilePicker.platform.pickFiles(
@@ -48,7 +39,7 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
       );
       if (result != null && result.files.single.path != null) {
         setState(() {
-          mobileFile = io.File(result.files.single.path!);
+          mobileFile = File(result.files.single.path!);
           fileName = result.files.single.name;
         });
       }
@@ -92,7 +83,7 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
         print(responseBody.body);
       }
     } catch (e) {
-      _showSnack('Error inesperado: $e');
+      _showSnack('Error inesperado: \$e');
     }
   }
 
@@ -175,7 +166,7 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
                   label: Text(
                     fileName == null
                         ? 'SELECCIONAR ARCHIVO EXCEL'
-                        : 'Seleccionado: $fileName',
+                        : 'Seleccionado: \$fileName',
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
