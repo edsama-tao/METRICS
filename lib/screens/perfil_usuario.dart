@@ -82,7 +82,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        centerTitle: true, // ✅ Asegura que el título esté centrado
+        centerTitle: true,
         title: SizedBox(
           height: 85,
           child: Image.asset(
@@ -103,18 +103,36 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
               ? const Center(child: Text("No se encontró el usuario."))
               : Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 600),
+                    constraints: const BoxConstraints(maxWidth: 700),
                     child: ListView(
                       padding: const EdgeInsets.all(20),
                       children: [
-                        buildInfoTile('NOMBRE DE USUARIO', usuarioData?['nombreUsuario'] ?? ''),
-                        buildInfoTile('NOMBRE', usuarioData?['nombre'] ?? ''),
-                        buildInfoTile('APELLIDOS', usuarioData?['apellidos'] ?? ''),
-                        buildInfoTile('DNI', usuarioData?['dni'] ?? ''),
-                        buildInfoTile('CORREO', usuarioData?['correo'] ?? ''),
-                        buildInfoTile('TELÉFONO', usuarioData?['telefono'] ?? ''),
-                        buildInfoTile('FECHA NACIMIENTO', usuarioData?['fechaNacimiento'] ?? ''),
-                        buildInfoTile('TIPO DE USUARIO', usuarioData?['tipoUser'] ?? ''),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 16),
+                          child: Center(
+                            child: Text(
+                              "DATOS DEL USUARIO",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            buildInfoCard('NOMBRE DE USUARIO', usuarioData?['nombreUsuario'] ?? '', Icons.account_circle),
+                            buildInfoCard('NOMBRE', usuarioData?['nombre'] ?? '', Icons.person),
+                            buildInfoCard('APELLIDOS', usuarioData?['apellidos'] ?? '', Icons.person_outline),
+                            buildInfoCard('DNI', usuarioData?['dni'] ?? '', Icons.badge),
+                            buildInfoCard('CORREO', usuarioData?['correo'] ?? '', Icons.email),
+                            buildInfoCard('TELÉFONO', usuarioData?['telefono'] ?? '', Icons.phone),
+                            buildInfoCard('FECHA NACIMIENTO', usuarioData?['fechaNacimiento'] ?? '', Icons.calendar_today),
+                            buildInfoCard('TIPO DE USUARIO', usuarioData?['tipoUser'] ?? '', Icons.verified_user),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -162,32 +180,33 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
     );
   }
 
-  Widget buildInfoTile(String label, String value) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 4,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+  Widget buildInfoCard(String label, String value, IconData icon) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width > 600 ? 320 : double.infinity,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.red),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(value, style: const TextStyle(fontSize: 15)),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Text(value, style: const TextStyle(fontSize: 16)),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -33,13 +33,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'nombre': nombreController.text,
-          'apellidos': apellidosController.text,
-          'dni': dniController.text,
-          'correo': correoController.text,
-          'telefono': telefonoController.text,
-          'nombreUsuario': usuarioController.text,
-          'contrasena': passwordController.text,
+          'nombre': nombreController.text.trim(),
+          'apellidos': apellidosController.text.trim(),
+          'dni': dniController.text.trim(),
+          'correo': correoController.text.trim(),
+          'telefono': telefonoController.text.trim(),
+          'nombreUsuario': usuarioController.text.trim(),
+          'contrasena': passwordController.text.trim(),
         }),
       );
 
@@ -50,6 +50,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SnackBar(content: Text('Registro exitoso')),
           );
           Navigator.pushReplacementNamed(context, '/login');
+        } else if (resultado['status'] == 'exists') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error: El nombre de usuario ya existe')),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: ${resultado['message']}')),
@@ -70,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color(0xFFEDEDED),
       drawer: const CustomDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
@@ -123,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     buildTextFormField(nombreController, Icons.person, 'NOMBRE', false),
                     buildTextFormField(apellidosController, Icons.person_outline, 'APELLIDOS', false),
                     buildTextFormField(dniController, Icons.badge, 'DNI', false),
-                    buildTextFormField(correoController, Icons.email, 'CORREO', false),
+                    buildTextFormField(correoController, Icons.email, 'CORREO', false, isGmail: true),
                     buildTextFormField(telefonoController, Icons.phone, 'TELÉFONO', false),
                     buildTextFormField(usuarioController, Icons.account_circle, 'USUARIO', false),
                     buildTextFormField(passwordController, Icons.lock, 'CONTRASEÑA', true),
@@ -200,14 +204,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     TextEditingController controller,
     IconData icon,
     String hint,
-    bool obscure,
-  ) {
+    bool obscure, {
+    bool isGmail = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
         controller: controller,
         obscureText: obscure,
-        validator: (value) => value!.isEmpty ? 'Completa este campo' : null,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Completa este campo';
+          }
+          if (isGmail && !RegExp(r'^[\w\.-]+@gmail\.com$').hasMatch(value.trim())) {
+            return 'Introduce un correo Gmail válido';
+          }
+          return null;
+        },
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.grey),
           hintText: hint,

@@ -265,45 +265,42 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Widget buildDatosAlumno() {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12),
+  final datos = [
+    {"titulo": "Nombre", "valor": contratoData?['nombre'] ?? '', "icono": Icons.person},
+    {"titulo": "Empresa", "valor": contratoData?['empresa'] ?? '', "icono": Icons.business},
+    {"titulo": "Tutor", "valor": contratoData?['tutor'] ?? '', "icono": Icons.school},
+    {"titulo": "Estudios", "valor": contratoData?['estudios'] ?? '', "icono": Icons.menu_book},
+    {"titulo": "Centro Formativo", "valor": contratoData?['centroFormativo'] ?? '', "icono": Icons.location_city},
+    {"titulo": "Horas Acuerdo", "valor": '${contratoData?['horasAcuerdo'] ?? 0} horas', "icono": Icons.access_time},
+    {"titulo": "Modalidad", "valor": contratoData?['modalidad'] ?? '', "icono": Icons.style},
+  ];
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Padding(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: Center(
           child: Text(
             "DATOS DEL ALUMNO",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        buildInfoCard("Nombre", contratoData?['nombre'] ?? '', Icons.person),
-        buildInfoCard(
-          "Empresa",
-          contratoData?['empresa'] ?? '',
-          Icons.business,
-        ),
-        buildInfoCard("Tutor", contratoData?['tutor'] ?? '', Icons.school),
-        buildInfoCard(
-          "Estudios",
-          contratoData?['estudios'] ?? '',
-          Icons.menu_book,
-        ),
-        buildInfoCard(
-          "Centro Formativo",
-          contratoData?['centroFormativo'] ?? '',
-          Icons.location_city,
-        ),
-        buildInfoCard(
-          "Horas Acuerdo",
-          '${contratoData?['horasAcuerdo'] ?? 0} horas',
-          Icons.access_time,
-        ),
-        buildInfoCard(
-          "Modalidad",
-          contratoData?['modalidad'] ?? '',
-          Icons.style,
-        ),
-      ],
-    );
-  }
+      ),
+      Wrap(
+        spacing: 12,
+        runSpacing: 12,
+        children: datos.map((dato) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width > 600 ? 310 : double.infinity,
+            child: buildInfoCard(dato['titulo']!, dato['valor']!, dato['icono']!),
+          );
+        }).toList(),
+      ),
+    ],
+  );
+}
+
 
   Widget buildBoton(String texto, Color color) {
     final bool desactivado = texto == 'ALMACENAR' && totalHoras > 240;
