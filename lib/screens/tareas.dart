@@ -65,7 +65,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
 
   Future<void> cargarContrato() async {
     final url = Uri.parse(
-      "http://10.100.0.9/flutter_api/get_contrato_usuario.php",
+      "http://10.100.101.46/flutter_api/get_contrato_usuario.php",
     );
     try {
       final response = await http.post(
@@ -88,7 +88,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   Future<void> cargarTareasGuardadas() async {
     try {
       final response = await http.post(
-        Uri.parse("http://10.100.0.9/flutter_api/get_tareas_fecha.php"),
+        Uri.parse("http://10.100.101.46/flutter_api/get_tareas_fecha.php"),
         body: {
           'id_user': widget.userId.toString(),
           'fecha': widget.fechaSeleccionada.toIso8601String().split('T')[0],
@@ -114,7 +114,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Future<void> enviarActividades() async {
-    final url = Uri.parse("http://10.100.0.9/flutter_api/insertar_tareas.php");
+    final url = Uri.parse("http://10.100.101.46/flutter_api/insertar_tareas.php");
     bool seEnvioAlgo = false;
 
     try {

@@ -34,7 +34,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
       return;
     }
 
-    final url = Uri.parse("http://10.100.0.9/flutter_api/get_usuario.php");
+    final url = Uri.parse("http://10.100.101.46/flutter_api/get_usuario.php");
 
     try {
       final response = await http.post(
@@ -72,7 +72,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const CustomDrawer(),
-      backgroundColor: const Color(0xFFEDEDED),
+      backgroundColor: const Color(0xFFF4F4F4),
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF3C41),
         automaticallyImplyLeading: false,
@@ -102,38 +102,54 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
           : usuarioData == null
               ? const Center(child: Text("No se encontró el usuario."))
               : Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 700),
-                    child: ListView(
-                      padding: const EdgeInsets.all(20),
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 16),
-                          child: Center(
-                            child: Text(
-                              "DATOS DEL USUARIO",
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            constraints: const BoxConstraints(maxWidth: 700),
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: const [
+                                BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "DATOS DEL USUARIO",
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: 16,
+                                  runSpacing: 16,
+                                  children: [
+                                    buildInfoCard('NOMBRE DE USUARIO', usuarioData?['nombreUsuario'] ?? '', Icons.account_circle),
+                                    buildInfoCard('NOMBRE', usuarioData?['nombre'] ?? '', Icons.person),
+                                    buildInfoCard('APELLIDOS', usuarioData?['apellidos'] ?? '', Icons.person_outline),
+                                    buildInfoCard('DNI', usuarioData?['dni'] ?? '', Icons.badge),
+                                    buildInfoCard('CORREO', usuarioData?['correo'] ?? '', Icons.email),
+                                    buildInfoCard('TELÉFONO', usuarioData?['telefono'] ?? '', Icons.phone),
+                                    buildInfoCard('FECHA NACIMIENTO', usuarioData?['fechaNacimiento'] ?? '', Icons.calendar_today),
+                                    buildInfoCard('TIPO DE USUARIO', usuarioData?['tipoUser'] ?? '', Icons.verified_user),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: [
-                            buildInfoCard('NOMBRE DE USUARIO', usuarioData?['nombreUsuario'] ?? '', Icons.account_circle),
-                            buildInfoCard('NOMBRE', usuarioData?['nombre'] ?? '', Icons.person),
-                            buildInfoCard('APELLIDOS', usuarioData?['apellidos'] ?? '', Icons.person_outline),
-                            buildInfoCard('DNI', usuarioData?['dni'] ?? '', Icons.badge),
-                            buildInfoCard('CORREO', usuarioData?['correo'] ?? '', Icons.email),
-                            buildInfoCard('TELÉFONO', usuarioData?['telefono'] ?? '', Icons.phone),
-                            buildInfoCard('FECHA NACIMIENTO', usuarioData?['fechaNacimiento'] ?? '', Icons.calendar_today),
-                            buildInfoCard('TIPO DE USUARIO', usuarioData?['tipoUser'] ?? '', Icons.verified_user),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -181,15 +197,21 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
   }
 
   Widget buildInfoCard(String label, String value, IconData icon) {
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+
     return SizedBox(
-      width: MediaQuery.of(context).size.width > 600 ? 320 : double.infinity,
+      width: isDesktop ? 320 : double.infinity,
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: isDesktop ? 10 : 4,
+              offset: isDesktop ? const Offset(0, 6) : const Offset(0, 2),
+            ),
           ],
         ),
         child: Row(
@@ -200,8 +222,9 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  Text(value, style: const TextStyle(fontSize: 15)),
+                  Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  const SizedBox(height: 4),
+                  Text(value, style: const TextStyle(fontSize: 16)),
                 ],
               ),
             ),

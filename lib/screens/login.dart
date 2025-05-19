@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final user = _userController.text.trim();
     final pass = _passController.text.trim();
 
-    final url = Uri.parse("http://10.100.0.9/flutter_api/login_usuario.php");
+    final url = Uri.parse("http://10.100.101.46/flutter_api/login_usuario.php");
 
     try {
       final response = await http.post(
