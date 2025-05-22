@@ -114,7 +114,7 @@ class _ActividadDiariaScreenState extends State<ActividadDiariaScreen> {
   }
 
   Future<void> enviarActividades() async {
-    final url = Uri.parse("http://10.100.101.46/flutter_api/insertar_tareas.php");
+    final url = Uri.parse("http://10.100.0.9/flutter_api/insertar_tareas.php");
     bool seEnvioAlgo = false;
 
     try {
