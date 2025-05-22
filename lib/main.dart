@@ -10,7 +10,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {3
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
