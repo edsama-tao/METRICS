@@ -46,7 +46,7 @@ class _ExportDataScreenState extends State<ExportDataScreen> {
   }
 
   Future<void> fetchUsuarios() async {
-    final url = Uri.parse('http://10.100.101.46/flutter_api/listar_usuarios.php');
+    final url = Uri.parse('http://10.100.0.9/flutter_api/listar_usuarios.php');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -91,7 +91,7 @@ Future<void> exportarUsuariosSeleccionados() async {
 
   try {
     final uri = Uri.parse(
-      'http://10.100.101.46/flutter_api/exportar_usuarios.php',
+      'http://10.100.0.9/flutter_api/exportar_usuarios.php',
     );
     final response = await http.post(
       uri,

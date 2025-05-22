@@ -34,7 +34,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
 
   //obtener los usuarios desde el servidor PHP
   Future<void> obtenerUsuarios() async {
-    final url = Uri.parse("http://10.100.101.46/flutter_api/get_usuarios.php");
+    final url = Uri.parse("http://10.100.0.9/flutter_api/get_usuarios.php");
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

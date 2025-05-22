@@ -27,7 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
 
   Future<void> registrarUsuario() async {
-    final url = Uri.parse("http://10.100.101.46/flutter_api/registrar_usuario.php");
+    final url = Uri.parse("http://10.100.0.9/flutter_api/registrar_usuario.php");
 
     try {
       final respuesta = await http.post(
